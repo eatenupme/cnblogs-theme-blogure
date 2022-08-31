@@ -1,0 +1,105 @@
+<header v-scope="Header(vm.header)" class="container"></header>
+<main v-scope="Main(vm.main)" class="container"></main>
+<footer v-scope="Footer()" class="container"></footer>
+
+<!-- header -->
+<template id="blogure-header">
+    <nav style="align-items:center;">
+        <hgroup style="margin-bottom:0;">
+            <h3><a :href="vm.header.url">{{ header.title }}</a></h3>
+            <h4>{{ header.subtitle }}</h4>
+        </hgroup>
+        <details role="list" style="margin-bottom:0;">
+            <summary aria-haspopup="listbox" role="link">更多</summary>
+            <ul role="listbox">
+                <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
+            </ul>
+        </details>
+    </nav>
+</template>
+<script>
+    function Header(header) {
+        return {
+            $template: '#blogure-header',
+            header,
+        }
+    }
+</script>
+
+<!-- main -->
+<template id="blogure-main">
+    <template v-if="main.layout === 'post'">
+        <article v-scope="Post(main.post)"></article>
+    </template>
+    <!-- TODO why dont use v-if - because BUG !!! or i cant use -->
+    <article v-scope="Post(post)" v-for="(post, index) in main.posts ?? []"></article>
+    <template v-if="main.layout === 'posts'">
+        <div v-scope="Page(main.page)"></div>
+    </template>
+</template>
+<script>
+    function Main(main) {
+        return {
+            $template: '#blogure-main',
+            main,
+        }
+    }
+</script>
+
+<!-- footer -->
+<template id="blogure-footer">
+    <small>Built with <a href="https://www.cnblogs.com/mossxzzom/p/cnblogs-theme-blogure.html">Blogure</a> • <a
+            href="https://github.com/mossxzzom/cnblogs-theme-blogure">Source</a></small>
+</template>
+<script>
+    function Footer() {
+        return {
+            $template: '#blogure-footer',
+        }
+    }
+</script>
+
+<!-- page -->
+<template id="blogure-page">
+    <ul :aria-busy="!(page.async.pages ?? true)" style="display:flex;padding-left:0;justify-content:center;">
+        <li v-for="(p, index) in page.pages ?? []"
+            style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
+            <kbd v-if="p.url == ''" style="background-color:var(--code-kbd-color);">
+                <span style="color: var(--code-kbd-background-color);">{{ p.desc }}</span></kbd>
+            <kbd v-else><a :href="p.url" style="color:var(--code-kbd-color);">{{ p.desc }}</a></kbd>
+        </li>
+    </ul>
+</template>
+<script>
+    function Page(page) {
+        return {
+            $template: '#blogure-page',
+            page,
+        }
+    }
+</script>
+
+<!-- post -->
+<template id="blogure-post">
+    <h2
+        style="position:relative;top:calc(var(--block-spacing-horizontal)*-3);height:var(--block-spacing-horizontal);margin-bottom:0;text-align:center;">
+        <kbd style="box-shadow:var(--card-box-shadow);">
+            <a :href="post.url" style="text-align:center;color:var(--code-kbd-color);">{{ post.title }}</a>
+        </kbd>
+    </h2>
+    <div :aria-busy="!(post.async.content ?? true)" v-html="post.content ?? ''"></div>
+    <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
+        <li v-for="(tag, index) in post.tags ?? []"
+            style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
+            <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
+        </li>
+    </ul>
+</template>
+<script>
+    function Post(post) {
+        return {
+            $template: '#blogure-post',
+            post,
+        }
+    }
+</script>
