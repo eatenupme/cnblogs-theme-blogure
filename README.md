@@ -17,3 +17,17 @@
 1. 页面定制 CSS 代码 -> ☑️禁用模板默认CSS -> [source](https://raw.githubusercontent.com/mossxzzom/cnblogs-theme-blogure/master/custom.css)
 1. 页首 HTML 代码 -> [source](https://raw.githubusercontent.com/mossxzzom/cnblogs-theme-blogure/master/page_begin.html)
 1. 页脚 HTML 代码 -> [source](https://raw.githubusercontent.com/mossxzzom/cnblogs-theme-blogure/master/page_end.html)
+
+### usage
+
+#### more 支持
+
+使用 class 为 more 的 html 元素对文章分割, 分割前的内容作为预览部分展示到摘要区.
+
+```markdown
+摘要...
+
+<br class="more">
+
+正文...
+```
