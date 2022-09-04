@@ -134,15 +134,29 @@
                 main.post.async.tags = true
             }
         })(vm.main))
-
+        if (!isLogined) return
         main.post.async.comments = false
-        main.post.async.commentformPromise = Get(getAjaxBaseUrl() + `CommentForm.aspx?postId=${cb_entryId}`)
         main.post.async.commentsPromise = Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`)
-        Promise.all([main.post.async.commentformPromise, main.post.async.commentsPromise]).then(((main) => {
+        main.post.comments = []
+        main.post.async.commentsPromise.then(((main) => {
             return (r) => {
-                const form = r[0]
-                const comments = r[1]
-                // console.log(form.responseText, comments.responseText)
+                const tempdom = document.createElement('div')
+                tempdom.innerHTML = r.responseText.trim()
+                const commentsdoms = tempdom.querySelectorAll('.feedbackItem')
+                for (let index = 0; index < commentsdoms.length; index++) {
+                    const commentdom = commentsdoms[index]
+                    const comment = {}
+                    comment.layer = commentdom.querySelector('.layer').innerText.trim()
+                    comment.isSelf = commentdom.querySelector('.louzhu') ? true : false
+                    const adoms = commentdom.querySelectorAll('.feedbackListSubtitle a')
+                    const userdom = adoms[adoms.length - 1]
+                    comment.user = { desc: userdom.innerText.trim(), url: userdom.href.trim() }
+                    comment.content = commentdom.querySelectorAll('.feedbackCon div')[0].innerHTML.trim()
+                    const spandoms = commentdom.querySelectorAll('.feedbackCon span')
+                    const avatardom = adoms[adoms.length - 1]
+                    comment.user.avatar = avatardom.innerText.trim()
+                    main.post.comments.push(comment)
+                }
             }
         })(vm.main))
         console.log(main)
