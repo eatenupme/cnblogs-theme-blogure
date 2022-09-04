@@ -134,6 +134,17 @@
                 main.post.async.tags = true
             }
         })(vm.main))
+
+        main.post.async.comments = false
+        main.post.async.commentformPromise = Get(getAjaxBaseUrl() + `CommentForm.aspx?postId=${cb_entryId}`)
+        main.post.async.commentsPromise = Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`)
+        Promise.all([main.post.async.commentformPromise, main.post.async.commentsPromise]).then(((main) => {
+            return (r) => {
+                const form = r[0]
+                const comments = r[1]
+                // console.log(form.responseText, comments.responseText)
+            }
+        })(vm.main))
         console.log(main)
         return main
     }
