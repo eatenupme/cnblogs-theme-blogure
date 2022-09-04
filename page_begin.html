@@ -94,6 +94,21 @@
             <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
         </li>
     </ul>
+    <template v-if="main.post.logined">
+        <ul :aria-busy="!(main.post.async.comments ?? true)">
+            <li v-for="(comment, index) in post.comments ?? []">
+                <div>
+                    <img :src="comment.user.avatar" :alt="comment.user.avatar">
+                    <a :href="comment.user.url">{{comment.user.desc}}</a>
+                </div>
+                <div v-html="comment.content ?? ''"></div>
+            </li>
+        </ul>
+    </template>
+    <template v-if="!main.post.logined">
+        <div>登录后才能查看或发表评论, 立即 <a rel="nofollow" href="javascript:void(0);" class="underline"
+                onclick="return account.login('!comments');">登录</a></div>
+    </template>
 </template>
 <script>
     function Post(post) {
