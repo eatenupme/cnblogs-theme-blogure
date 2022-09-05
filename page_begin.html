@@ -94,7 +94,11 @@
             <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
         </li>
     </ul>
-    <template v-if="main.post.logined">
+    <template v-if="main.post.logined ?? false">
+        <div :aria-busy="!((main.post.async.commentForm ?? true) && (vm.async.mention ?? true))"
+            v-html="main.post.commentForm ?? ''"
+            v-effect="if(main.post.async.commentForm){initCommentEditor('tbCommentBody');commentManager.renderComments(0);}">
+        </div>
         <ul :aria-busy="!(main.post.async.comments ?? true)">
             <li v-for="(comment, index) in post.comments ?? []">
                 <div>
@@ -105,7 +109,7 @@
             </li>
         </ul>
     </template>
-    <template v-if="!main.post.logined">
+    <template v-if="!(main.post.logined ?? false)">
         <div>登录后才能查看或发表评论, 立即 <a rel="nofollow" href="javascript:void(0);" class="underline"
                 onclick="return account.login('!comments');">登录</a></div>
     </template>

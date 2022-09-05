@@ -1,5 +1,7 @@
 <script id="petite-vue" src="https://unpkg.com/petite-vue@0.4.1" defer></script>
 <script id="prism" src="https://blog-static.cnblogs.com/files/blogs/726915/prism.js" defer></script>
+<script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js"></script>
+
 <script>
     // @returm promise 
     function Get(url) {
@@ -29,8 +31,12 @@
         document.body.classList.remove('mathjax2')
         document.body.classList.remove('no-navbar')
         document.body.style.visibility = 'visible'
+        // body html append token
+        const tokendom = originBody.querySelector('#antiforgery_token')
+        document.body.appendChild(tokendom)
         // vm mount
         const vm = (window.vm = PetiteVue.reactive({}))
+        vm.async = {}
         vm.header = GetHeader(originBody)
         vm.main = GetMain(originBody)
         vm.main.page = GetPage(originBody)
@@ -56,6 +62,41 @@
             e.element.style.padding = 0
         })
     }
+
+    // mention
+    const mc = document.querySelector('#mention')
+    mc.onload = mc.onreadystatechange = _ => {
+        if (!(!mc.readyState || mc.readyState === 'loaded' || mc.readyState === 'complete')) return
+        window.vm.async.mention = true
+    }
+
+    // jq comment submit 
+    $(document).ajaxComplete((event, xhr, settings) => {
+        if (settings.url.indexOf('PostComment/Add.aspx') < 0) return
+        window.vm.main.post.async.comments = false
+        Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`).then((r) => {
+            comments = []
+            const tempdom = document.createElement('div')
+            tempdom.innerHTML = r.responseText.trim()
+            const commentsdoms = tempdom.querySelectorAll('.feedbackItem')
+            for (let index = 0; index < commentsdoms.length; index++) {
+                const commentdom = commentsdoms[index]
+                const comment = {}
+                comment.layer = commentdom.querySelector('.layer').innerText.trim()
+                comment.isSelf = commentdom.querySelector('.louzhu') ? true : false
+                const adoms = commentdom.querySelectorAll('.feedbackListSubtitle a')
+                const userdom = adoms[adoms.length - 1]
+                comment.user = { desc: userdom.innerText.trim(), url: userdom.href.trim() }
+                comment.content = commentdom.querySelectorAll('.feedbackCon div')[0].innerHTML.trim()
+                const spandoms = commentdom.querySelectorAll('.feedbackCon span')
+                const avatardom = spandoms[spandoms.length - 1]
+                comment.user.avatar = avatardom.innerText.trim()
+                comments.push(comment)
+            }
+            window.vm.main.post.comments = comments
+            window.vm.main.post.async.comments = true
+        })
+    })
 
     function GetHeader(originBody) {
         // def
@@ -162,13 +203,28 @@
                 main.post.async.comments = true
             }
         })(vm.main))
+        main.post.async.commentForm = false
+        main.post.async.commentsForm = Get(getAjaxBaseUrl() + `CommentForm.aspx?postId=${cb_entryId}`)
+        main.post.async.commentsForm.then(((main) => {
+            return (r) => {
+                const tempdom = document.createElement('div')
+                tempdom.innerHTML = r.responseText.trim()
+                main.post.commentForm = ''
+                const jsdoms = []
+                for (let index = 0; index < tempdom.children.length; index++) {
+                    const formdom = tempdom.children[index]
+                    if (formdom.tagName !== 'SCRIPT') main.post.commentForm += formdom.outerHTML
+                }
+                main.post.async.commentForm = true
+            }
+        })(vm.main))
         console.log(main)
         return main
     }
 
     function MainPosts(postlistdoms, descsdoms) {
         // def
-        const main = (vm.main = {})
+        const main = (vm.main = { post: {} })
         main.layout = 'posts'
         main.posts = []
         // tags, content(async): optimization cycle complex
