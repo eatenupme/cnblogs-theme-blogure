@@ -9,12 +9,21 @@
             <h3><a :href="vm.header.url">{{ header.title }}</a></h3>
             <h4>{{ header.subtitle }}</h4>
         </hgroup>
-        <details role="list" style="margin-bottom:0;">
-            <summary aria-haspopup="listbox" role="link">更多</summary>
-            <ul role="listbox">
-                <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
-            </ul>
-        </details>
+        <div style="display:flex;">
+            <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
+                <summary aria-haspopup="listbox" role="link">Theme</summary>
+                <ul role="listbox">
+                    <li><a onclick="document.querySelector('html').setAttribute('data-theme','dark')">Dark</a></li>
+                    <li><a onclick="document.querySelector('html').setAttribute('data-theme','light')">Light</a></li>
+                </ul>
+            </details>
+            <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
+                <summary aria-haspopup="listbox" role="link">更多</summary>
+                <ul role="listbox">
+                    <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
+                </ul>
+            </details>
+        </div>
     </nav>
 </template>
 <script>
