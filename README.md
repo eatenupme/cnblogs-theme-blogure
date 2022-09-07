@@ -2,7 +2,7 @@
 
 > *又一个博客园主题 Blogure. 它使用 PetiteVue 和 PicoCSS.*
 
-![image](https://img2022.cnblogs.com/blog/2588074/202208/2588074-20220830175631333-248734544.png)
+![image](https://user-images.githubusercontent.com/64666574/188789780-51c01693-8de8-4fed-85dd-06b1964801ee.png)
 
 ### live demo
 
