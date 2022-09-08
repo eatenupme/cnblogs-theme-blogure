@@ -38,10 +38,11 @@
 <!-- main -->
 <template id="blogure-main">
     <template v-if="main.layout === 'post'">
-        <article v-scope="Post(main.post)"></article>
+        <article v-scope="Post(main.post)" id="article"></article>
+        <div id="toc" style="position: fixed;left: 0;top: 0;"></div>
     </template>
     <!-- TODO why dont use v-if - because BUG !!! or i cant use -->
-    <article v-scope="Post(post)" v-for="(post, index) in main.posts ?? []"></article>
+    <article v-scope="Post(post)" :id="'article-'+index" v-for="(post, index) in main.posts ?? []"></article>
     <template v-if="main.layout === 'posts'">
         <div v-scope="Page(main.page)"></div>
     </template>

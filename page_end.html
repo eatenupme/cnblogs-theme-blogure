@@ -1,6 +1,7 @@
 <script id="petite-vue" src="https://unpkg.com/petite-vue@0.4.1" defer></script>
 <script id="prism" src="https://blog-static.cnblogs.com/files/blogs/726915/prism.js" defer></script>
-<script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js"></script>
+<script id="tocbot" src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js" defer></script>
+<script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script>
 
 <script>
     // @returm promise 
@@ -60,6 +61,18 @@
         })
         Prism.hooks.add("before-insert", e => {
             e.element.style.padding = 0
+        })
+    }
+
+    // tocbot
+    const tc = document.querySelector('#tocbot')
+    tc.onload = tc.onreadystatechange = _ => {
+        if (!(!pc.readyState || pc.readyState === 'loaded' || pc.readyState === 'complete')) return
+        tocbot.init({
+            tocSelector: '#toc',
+            contentSelector: '#article',
+            headingSelector: 'h1, h2, h3',
+            hasInnerContainers: true,
         })
     }
 
