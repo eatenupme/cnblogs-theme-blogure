@@ -38,11 +38,11 @@
 <!-- main -->
 <template id="blogure-main">
     <template v-if="main.layout === 'post'">
-        <article v-scope="Post(main.post)" id="article"></article>
+        <article v-scope="Post(main.post)" class="article"></article>
         <div id="toc" style="position: fixed;left: 0;top: 0;"></div>
     </template>
     <!-- TODO why dont use v-if - because BUG !!! or i cant use -->
-    <article v-scope="Post(post)" :id="'article-'+index" v-for="(post, index) in main.posts ?? []"></article>
+    <article v-scope="Post(post)" class="article" v-for="(post, index) in main.posts ?? []"></article>
     <template v-if="main.layout === 'posts'">
         <div v-scope="Page(main.page)"></div>
     </template>
@@ -97,7 +97,12 @@
             <a :href="post.url" style="text-align:center;color:var(--code-kbd-color);">{{ post.title }}</a>
         </kbd>
     </h2>
-    <div :aria-busy="!(post.async.content ?? true)" v-html="post.content ?? ''"></div>
+    <template v-if="!(post.async.content ?? true)">
+        <div aria-busy="true"></div>
+    </template>
+    <template v-if="(post.async.content ?? true)">
+        <div v-html="post.content" v-effect="markdown_highlight('.article');Prism.highlightAll();"></div>
+    </template>
     <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
         <li v-for="(tag, index) in post.tags ?? []"
             style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">

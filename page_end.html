@@ -1,5 +1,4 @@
 <script id="petite-vue" src="https://unpkg.com/petite-vue@0.4.1" defer></script>
-<script id="prism" src="https://blog-static.cnblogs.com/files/blogs/726915/prism.js" defer></script>
 <script id="tocbot" src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js" defer></script>
 <script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script>
 
@@ -42,26 +41,6 @@
         vm.main = GetMain(originBody)
         vm.main.page = GetPage(originBody)
         PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
-    }
-
-    // prism
-    const pc = document.querySelector('#prism')
-    window.Prism = window.Prism || { manual: true }
-    pc.onload = pc.onreadystatechange = _ => {
-        if (!(!pc.readyState || pc.readyState === 'loaded' || pc.readyState === 'complete')) return
-        document.addEventListener('DOMNodeInserted', e => {
-            const loader = { loaded: true }
-            document.querySelectorAll('pre [class*=language-]').forEach(e => {
-                if (e.parentElement.getAttribute('loaded')) return
-                e.parentElement.setAttribute('loaded', 'true')
-                loader.loaded = false
-            })
-            if (loader.loaded) return
-            Prism.highlightAll()
-        })
-        Prism.hooks.add("before-insert", e => {
-            e.element.style.padding = 0
-        })
     }
 
     // tocbot
@@ -159,14 +138,7 @@
         main.post.title = titledom.innerText.trim()
         // content
         const bodydom = detaildom.querySelector('#cnblogs_post_body')
-        bodydom.querySelectorAll('pre [class*=language-]').forEach(codedom => {
-            codedom.parentElement.style.whiteSpace = 'pre-wrap'
-            codedom.parentElement.style.fontSize = '.875rem'
-            codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
-            codedom.parentElement.setAttribute('data-prismjs-copy', '📋')
-            codedom.parentElement.setAttribute('data-prismjs-copy-error', '👅')
-            codedom.parentElement.setAttribute('data-prismjs-copy-success', '👌')
-        })
+        highlightNumber(bodydom)
         main.post.content = bodydom.innerHTML.trim()
         // tags(async)
         main.post.async.tags = false
@@ -263,14 +235,7 @@
                 post.url = titledom.href.trim()
                 post.title = titledom.innerText.trim()
                 const bodydom = detaildom.querySelector('#cnblogs_post_body')
-                bodydom.querySelectorAll('pre [class*=language-]').forEach(codedom => {
-                    codedom.parentElement.style.whiteSpace = 'pre-wrap'
-                    codedom.parentElement.style.fontSize = '.875rem'
-                    codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
-                    codedom.parentElement.setAttribute('data-prismjs-copy', '📋')
-                    codedom.parentElement.setAttribute('data-prismjs-copy-error', '👅')
-                    codedom.parentElement.setAttribute('data-prismjs-copy-success', '👌')
-                })
+                highlightNumber(bodydom)
                 post.content = bodydom.innerHTML.trim()
                 post.async.content = true
                 if (!bodydom.querySelector('.more')) return
@@ -366,5 +331,12 @@
         })(vm.main.page))
         console.log(page)
         return page
+    }
+
+    function highlightNumber(dom) {
+        if (!enableCodeLineNumber) return
+        dom.querySelectorAll('pre code').forEach(codedom => {
+            codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
+        })
     }
 </script>
