@@ -101,7 +101,7 @@
         <div aria-busy="true"></div>
     </template>
     <template v-if="(post.async.content ?? true)">
-        <div v-html="post.content" v-effect="markdown_highlight('.article');Prism.highlightAll();"></div>
+        <div v-html="post.content" v-effect="markdown_highlight('.article');"></div>
     </template>
     <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
         <li v-for="(tag, index) in post.tags ?? []"
@@ -136,4 +136,9 @@
             post,
         }
     }
+</script>
+
+<script>
+    function markdown_highlight_swap() { } // 如果保证可以触发到这个方法, 是可以对 `page_end.html` 透明
+    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
 </script>
