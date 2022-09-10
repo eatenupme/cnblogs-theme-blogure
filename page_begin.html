@@ -113,17 +113,17 @@
             <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
         </li>
     </ul>
-    <template v-if="!((main.post.async.commentForm ?? true) && (vm.async.mention ?? true))">
+    <template v-if="!((post.async.commentForm ?? true) && (vm.async.mention ?? true))">
         <div aria-busy="true"></div>
     </template>
     <template
-        v-if="(main.post.async.commentForm ?? true) && (vm.async.mention ?? true) && (main.post.logined ?? false)">
+        v-if="(post.async.commentForm ?? true) && (vm.async.mention ?? true) && (main.layout === 'post') && (main.post.logined ?? false)">
         <div v-html="main.post.commentForm ?? ''"
             v-effect="window.commentEditor=initCommentEditor('tbCommentBody');commentManager.renderComments(0);">
         </div>
     </template>
     <template v-if="(main.layout === 'post') && (main.post.logined ?? false)">
-        <ul :aria-busy="!(main.post.async.comments ?? true)">
+        <ul :aria-busy="!(post.async.comments ?? true)">
             <li v-for="(comment, index) in post.comments ?? []">
                 <div>
                     <img :src="comment.user.avatar" :alt="comment.user.avatar">
