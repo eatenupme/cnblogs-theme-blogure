@@ -9,21 +9,12 @@
             <h3><a :href="vm.header.url">{{ header.title }}</a></h3>
             <h4>{{ header.subtitle }}</h4>
         </hgroup>
-        <div style="display:flex;">
-            <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
-                <summary aria-haspopup="listbox" role="link">Theme</summary>
-                <ul role="listbox">
-                    <li><a onclick="document.querySelector('html').setAttribute('data-theme','dark')">Dark</a></li>
-                    <li><a onclick="document.querySelector('html').setAttribute('data-theme','light')">Light</a></li>
-                </ul>
-            </details>
-            <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
-                <summary aria-haspopup="listbox" role="link">更多</summary>
-                <ul role="listbox">
-                    <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
-                </ul>
-            </details>
-        </div>
+        <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
+            <summary aria-haspopup="listbox" role="link">更多</summary>
+            <ul role="listbox">
+                <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
+            </ul>
+        </details>
     </nav>
 </template>
 <script>
@@ -39,7 +30,6 @@
 <template id="blogure-main">
     <template v-if="main.layout === 'post'">
         <article v-scope="Post(main.post)" class="article"></article>
-        <div id="toc" style="position: fixed;left: 0;top: 0;"></div>
     </template>
     <!-- TODO why dont use v-if - because BUG !!! or i cant use -->
     <article v-scope="Post(post)" class="article" v-for="(post, index) in main.posts ?? []"></article>
@@ -60,6 +50,20 @@
 <template id="blogure-footer">
     <small>Built with <a href="https://www.cnblogs.com/">cnblogs</a> •
         <a href="https://github.com/mossxzzom/cnblogs-theme-blogure">source</a></small>
+    <label for="switch">
+        <input type="checkbox" style="position:fixed;bottom:var(--spacing);left:var(--spacing);" id="dark-switch"
+            role="switch" @click="darkSwitcher($el)">
+    </label>
+    <template v-if="vm.main.layout === 'post'">
+        <label for="switch">
+            <input type="checkbox"
+                style="position:fixed;bottom:var(--spacing);right:var(--spacing);z-index:2;transform:rotate(180deg);"
+                id="toc-switch" role="switch" @click="tocSwitcher($el)">
+        </label>
+        <aside id="toc"
+            style="transition:var(--transition);transform:translate(calc(var(--spacing)*15));width:calc(var(--spacing)*15);height:100%;position:fixed;top:0;right:0;z-index:1;background-color:var(--code-kbd-color);">
+        </aside>
+    </template>
 </template>
 <script>
     function Footer() {
@@ -109,11 +113,16 @@
             <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
         </li>
     </ul>
-    <template v-if="(main.layout === 'post') && (main.post.logined ?? false)">
-        <div :aria-busy="!((main.post.async.commentForm ?? true) && (vm.async.mention ?? true))"
-            v-html="main.post.commentForm ?? ''"
-            v-effect="if(main.post.async.commentForm){const commentEditor=initCommentEditor('tbCommentBody');commentManager.renderComments(0);}">
+    <template v-if="!((main.post.async.commentForm ?? true) && (vm.async.mention ?? true))">
+        <div aria-busy="true"></div>
+    </template>
+    <template
+        v-if="(main.post.async.commentForm ?? true) && (vm.async.mention ?? true) && (main.post.logined ?? false)">
+        <div v-html="main.post.commentForm ?? ''"
+            v-effect="window.commentEditor=initCommentEditor('tbCommentBody');commentManager.renderComments(0);">
         </div>
+    </template>
+    <template v-if="(main.layout === 'post') && (main.post.logined ?? false)">
         <ul :aria-busy="!(main.post.async.comments ?? true)">
             <li v-for="(comment, index) in post.comments ?? []">
                 <div>

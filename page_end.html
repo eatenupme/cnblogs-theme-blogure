@@ -341,4 +341,20 @@
             codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
         })
     }
+
+    function darkSwitcher(dom) {
+        if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
+        if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
+    }
+
+    function tocSwitcher(dom) {
+        if (dom.checked) {
+            document.querySelector('#toc').style.transform = 'translate(0)'
+            document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
+        }
+        if (!dom.checked) {
+            document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
+            document.querySelector('#toc').style.boxShadow = ''
+        }
+    }
 </script>
