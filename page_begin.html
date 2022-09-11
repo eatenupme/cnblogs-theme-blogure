@@ -105,7 +105,7 @@
         <div aria-busy="true"></div>
     </template>
     <template v-if="(post.async.content ?? true)">
-        <div v-html="post.content" v-effect="markdown_highlight('.article');"></div>
+        <div v-html="post.content" v-effect="markdown_highlight('.article');Prism.highlightAll();"></div>
     </template>
     <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
         <li v-for="(tag, index) in post.tags ?? []"
