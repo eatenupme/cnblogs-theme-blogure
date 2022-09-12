@@ -1,52 +1,6 @@
-<header v-scope="Header(vm.header)" class="container"></header>
+<!-- DO NOT EDIT --><header v-scope="Header(vm.header)" class="container"></header>
 <main v-scope="Main(vm.main)" class="container"></main>
-<footer v-scope="Footer()" class="container"></footer>
-
-<!-- header -->
-<template id="blogure-header">
-    <nav style="align-items:center;">
-        <hgroup style="margin-bottom:0;">
-            <h3><a :href="vm.header.url">{{ header.title }}</a></h3>
-            <h4>{{ header.subtitle }}</h4>
-        </hgroup>
-        <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
-            <summary aria-haspopup="listbox" role="link">更多</summary>
-            <ul role="listbox">
-                <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
-            </ul>
-        </details>
-    </nav>
-</template>
-<script>
-    function Header(header) {
-        return {
-            $template: '#blogure-header',
-            header,
-        }
-    }
-</script>
-
-<!-- main -->
-<template id="blogure-main">
-    <template v-if="main.layout === 'post'">
-        <article v-scope="Post(main.post)" class="article"></article>
-    </template>
-    <!-- TODO why dont use v-if - because BUG !!! or i cant use -->
-    <article v-scope="Post(post)" class="article" v-for="(post, index) in main.posts ?? []"></article>
-    <template v-if="main.layout === 'posts'">
-        <div v-scope="Page(main.page)"></div>
-    </template>
-</template>
-<script>
-    function Main(main) {
-        return {
-            $template: '#blogure-main',
-            main,
-        }
-    }
-</script>
-
-<!-- footer -->
+<footer v-scope="Footer()" class="container"></footer><!-- footer -->
 <template id="blogure-footer">
     <small>Built with <a href="https://www.cnblogs.com/">cnblogs</a> •
         <a href="https://github.com/mossxzzom/cnblogs-theme-blogure">source</a></small>
@@ -71,9 +25,66 @@
             $template: '#blogure-footer',
         }
     }
-</script>
+    
+    function darkSwitcher(dom) {
+        if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
+        if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
+    }
 
-<!-- page -->
+    function tocSwitcher(dom) {
+        if (dom.checked) {
+            document.querySelector('#toc').style.transform = 'translate(0)'
+            document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
+        }
+        if (!dom.checked) {
+            document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
+            document.querySelector('#toc').style.boxShadow = ''
+        }
+    }
+</script><!-- header -->
+<template id="blogure-header">
+    <nav style="align-items:center;">
+        <hgroup style="margin-bottom:0;">
+            <h3><a :href="vm.header.url">{{ header.title }}</a></h3>
+            <h4>{{ header.subtitle }}</h4>
+        </hgroup>
+        <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
+            <summary aria-haspopup="listbox" role="link">更多</summary>
+            <ul role="listbox">
+                <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
+            </ul>
+        </details>
+    </nav>
+</template>
+<script>
+    function Header(header) {
+        return {
+            $template: '#blogure-header',
+            header,
+        }
+    }
+</script><script>
+    function markdown_highlight_swap() { } // 如果保证可以触发到这个方法, 是可以对 `page_end.html` 透明
+    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+</script><!-- main -->
+<template id="blogure-main">
+    <template v-if="main.layout === 'post'">
+        <article v-scope="Post(main.post)" class="article"></article>
+    </template>
+    <!-- TODO why dont use v-if - because BUG !!! or i cant use -->
+    <article v-scope="Post(post)" class="article" v-for="(post, index) in main.posts ?? []"></article>
+    <template v-if="main.layout === 'posts'">
+        <div v-scope="Page(main.page)"></div>
+    </template>
+</template>
+<script>
+    function Main(main) {
+        return {
+            $template: '#blogure-main',
+            main,
+        }
+    }
+</script><!-- page -->
 <template id="blogure-page">
     <ul :aria-busy="!(page.async.pages ?? true)" style="display:flex;padding-left:0;justify-content:center;">
         <li v-for="(p, index) in page.pages ?? []"
@@ -91,9 +102,7 @@
             page,
         }
     }
-</script>
-
-<!-- post -->
+</script><!-- post -->
 <template id="blogure-post">
     <h2
         style="position:relative;top:calc(var(--block-spacing-horizontal)*-3);height:var(--block-spacing-horizontal);margin-bottom:0;text-align:center;">
@@ -145,9 +154,4 @@
             post,
         }
     }
-</script>
-
-<script>
-    function markdown_highlight_swap() { } // 如果保证可以触发到这个方法, 是可以对 `page_end.html` 透明
-    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
 </script>

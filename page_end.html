@@ -1,70 +1,6 @@
-<script id="petite-vue" src="https://unpkg.com/petite-vue@0.4.1" defer></script>
+<!-- DO NOT EDIT --><script id="petite-vue" src="https://unpkg.com/petite-vue@0.4.1" defer></script>
 <script id="tocbot" src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js" defer></script>
-<script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script>
-
-<script>
-    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
-
-    // @returm promise 
-    function Get(url) {
-        const xhr = new XMLHttpRequest()
-        xhr.open('GET', url, true)
-        xhr.send()
-        return new Promise(r => {
-            xhr.onreadystatechange = _ => {
-                if (xhr.readyState !== 4) return
-                r(xhr)
-            }
-        })
-    }
-
-    // vue
-    const pv = document.querySelector('#petite-vue')
-    pv.onload = pv.onreadystatechange = _ => {
-        if (!(!pv.readyState || pv.readyState === 'loaded' || pv.readyState === 'complete')) return
-        // save to origin 
-        const originBody = document.createElement('html')
-        originBody.innerHTML = document.body.innerHTML
-        // body html update
-        document.body.innerHTML = originBody.querySelector('#page_begin_html').innerHTML
-        // body css update
-        document.body.classList.remove('skin-simplememory')
-        document.body.classList.remove('has-navbar')
-        document.body.classList.remove('mathjax2')
-        document.body.classList.remove('no-navbar')
-        document.body.style.visibility = 'visible'
-        // body html append token
-        const tokendom = originBody.querySelector('#antiforgery_token')
-        document.body.appendChild(tokendom)
-        // vm mount
-        const vm = (window.vm = PetiteVue.reactive({}))
-        vm.async = {}
-        vm.header = GetHeader(originBody)
-        vm.main = GetMain(originBody)
-        vm.main.page = GetPage(originBody)
-        PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
-    }
-
-    // tocbot
-    const tc = document.querySelector('#tocbot')
-    tc.onload = tc.onreadystatechange = _ => {
-        if (!(!tc.readyState || tc.readyState === 'loaded' || tc.readyState === 'complete')) return
-        tocbot.init({
-            tocSelector: '#toc',
-            contentSelector: '.article',
-            headingSelector: 'h1, h2, h3',
-            hasInnerContainers: true,
-        })
-    }
-
-    // mention
-    const mc = document.querySelector('#mention')
-    mc.onload = mc.onreadystatechange = _ => {
-        if (!(!mc.readyState || mc.readyState === 'loaded' || mc.readyState === 'complete')) return
-        window.vm.async.mention = true
-    }
-
-    // jq comment submit 
+<script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script><script>
     $(document).ajaxComplete((event, xhr, settings) => {
         if (settings.url.indexOf('PostComment/Add.aspx') < 0) return
         window.vm.main.post.async.comments = false
@@ -91,7 +27,7 @@
             window.vm.main.post.async.comments = true
         })
     })
-
+</script><script>
     function GetHeader(originBody) {
         // def
         const header = (vm.header = {})
@@ -116,7 +52,21 @@
         console.log(header)
         return header
     }
-
+</script><script>
+    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+</script><script>
+    function Get(url) {
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', url, true)
+        xhr.send()
+        return new Promise(r => {
+            xhr.onreadystatechange = _ => {
+                if (xhr.readyState !== 4) return
+                r(xhr)
+            }
+        })
+    }
+</script><script>
     function GetMain(originBody) {
         if (originBody.querySelector('#post_detail')) {
             return MainPost(originBody.querySelector('#post_detail'))
@@ -127,7 +77,90 @@
         }
         return { layout: '' }
     }
-
+</script><script>
+    const mc = document.querySelector('#mention')
+    mc.onload = mc.onreadystatechange = _ => {
+        if (!(!mc.readyState || mc.readyState === 'loaded' || mc.readyState === 'complete')) return
+        window.vm.async.mention = true
+    }
+</script><script>
+    function GetPage(originBody) {
+        const page = (vm.main.page = {})
+        page.pages = []
+        page.async = {}
+        if (!((originBody.querySelector('.Pager, .pager') || originBody.querySelector('#nav_next_page a')))) {
+            console.log(page)
+            return page
+        }
+        const pagerdom = originBody.querySelector('.Pager') ? originBody.querySelector('.Pager') : originBody.querySelector('.pager')
+        if (pagerdom) {
+            const pagenodes = pagerdom.childNodes
+            for (let index = 0; index < pagenodes.length; index++) {
+                const pagenode = pagenodes[index]
+                if (pagenode.textContent.trim() == '') continue
+                const p = {}
+                p.desc = pagenode.textContent.trim()
+                p.url = pagenode.href ? pagenode.href.trim() : ''
+                page.pages.push(p)
+            }
+            console.log(page)
+            return page
+        }
+        page.async.pagePromise = Get(originBody.querySelector('#nav_next_page a').href.trim())
+        page.async.pages = false
+        page.async.pagePromise.then(((page) => {
+            return (r) => {
+                const tempdom = document.createElement('html')
+                tempdom.innerHTML = r.responseText
+                const pagenodes = tempdom.querySelector('.Pager, .pager').childNodes
+                for (let index = 0; index < pagenodes.length; index++) {
+                    const pagenode = pagenodes[index]
+                    if (pagenode.textContent.trim() == '') continue
+                    const p = {}
+                    p.desc = pagenode.textContent.trim()
+                    p.url = pagenode.href ? pagenode.href.trim() : ''
+                    page.pages.push(p)
+                }
+                page.pages.shift() // const('上一页')
+                if (page.pages.length == 2) page.pages.push({ 'desc': '下一页', url: r.responseURL })
+                [page.pages[0], page.pages[1]] = [page.pages[1], page.pages[2]]
+                page.pages[0].desc = '1'
+                page.pages[0].url = ''
+                page.pages[1].desc = '2'
+                page.pages[1].url = r.responseURL
+                page.async.pages = true
+            }
+        })(vm.main.page))
+        console.log(page)
+        return page
+    }
+</script><script>
+    const pv = document.querySelector('#petite-vue')
+    pv.onload = pv.onreadystatechange = _ => {
+        if (!(!pv.readyState || pv.readyState === 'loaded' || pv.readyState === 'complete')) return
+        // save to origin 
+        const originBody = document.createElement('html')
+        originBody.innerHTML = document.body.innerHTML
+        // body html update
+        document.body.innerHTML = originBody.querySelector('#page_begin_html').innerHTML
+        // body css update
+        document.body.classList.remove('skin-simplememory')
+        document.body.classList.remove('has-navbar')
+        document.body.classList.remove('mathjax2')
+        document.body.classList.remove('no-navbar')
+        document.body.style.visibility = 'visible'
+        // body html append token
+        const tokendom = originBody.querySelector('#antiforgery_token')
+        document.body.appendChild(tokendom)
+        // vm mount
+        const vm = (window.vm = PetiteVue.reactive({}))
+        vm.async = {}
+        vm.header = GetHeader(originBody)
+        vm.main = GetMain(originBody)
+        vm.main.page = GetPage(originBody)
+        PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
+    }
+</script><script>
     function MainPost(detaildom) {
         // def
         const main = (vm.main = {})
@@ -208,7 +241,7 @@
         console.log(main)
         return main
     }
-
+</script><script>
     function MainPosts(postlistdoms, descsdoms) {
         // def
         const main = (vm.main = {})
@@ -272,89 +305,22 @@
         console.log(main)
         return main
     }
-
-    function GetMain(originBody) {
-        if (originBody.querySelector('#post_detail')) { // /p/xxx
-            return MainPost(originBody.querySelector('#post_detail'))
-        }
-        if (originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) { // /p //tag/xxx
-            return MainPosts(originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle'),
-                originBody.querySelectorAll('.postDesc, .postDesc2, .entrylistItemPostDesc'))
-        }
-        return { layout: '' }
-    }
-
-    function GetPage(originBody) {
-        const page = (vm.main.page = {})
-        page.pages = []
-        page.async = {}
-        if (!((originBody.querySelector('.Pager, .pager') || originBody.querySelector('#nav_next_page a')))) {
-            console.log(page)
-            return page
-        }
-        const pagerdom = originBody.querySelector('.Pager') ? originBody.querySelector('.Pager') : originBody.querySelector('.pager')
-        if (pagerdom) {
-            const pagenodes = pagerdom.childNodes
-            for (let index = 0; index < pagenodes.length; index++) {
-                const pagenode = pagenodes[index]
-                if (pagenode.textContent.trim() == '') continue
-                const p = {}
-                p.desc = pagenode.textContent.trim()
-                p.url = pagenode.href ? pagenode.href.trim() : ''
-                page.pages.push(p)
-            }
-            console.log(page)
-            return page
-        }
-        page.async.pagePromise = Get(originBody.querySelector('#nav_next_page a').href.trim())
-        page.async.pages = false
-        page.async.pagePromise.then(((page) => {
-            return (r) => {
-                const tempdom = document.createElement('html')
-                tempdom.innerHTML = r.responseText
-                const pagenodes = tempdom.querySelector('.Pager, .pager').childNodes
-                for (let index = 0; index < pagenodes.length; index++) {
-                    const pagenode = pagenodes[index]
-                    if (pagenode.textContent.trim() == '') continue
-                    const p = {}
-                    p.desc = pagenode.textContent.trim()
-                    p.url = pagenode.href ? pagenode.href.trim() : ''
-                    page.pages.push(p)
-                }
-                page.pages.shift() // const('上一页')
-                if (page.pages.length == 2) page.pages.push({ 'desc': '下一页', url: r.responseURL })
-                [page.pages[0], page.pages[1]] = [page.pages[1], page.pages[2]]
-                page.pages[0].desc = '1'
-                page.pages[0].url = ''
-                page.pages[1].desc = '2'
-                page.pages[1].url = r.responseURL
-                page.async.pages = true
-            }
-        })(vm.main.page))
-        console.log(page)
-        return page
-    }
-
+</script><script>
     function highlightNumber(dom) {
         if (!enableCodeLineNumber) return
         dom.querySelectorAll('pre code').forEach(codedom => {
             codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
         })
     }
-
-    function darkSwitcher(dom) {
-        if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
-        if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
-    }
-
-    function tocSwitcher(dom) {
-        if (dom.checked) {
-            document.querySelector('#toc').style.transform = 'translate(0)'
-            document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
-        }
-        if (!dom.checked) {
-            document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
-            document.querySelector('#toc').style.boxShadow = ''
-        }
+</script><script>
+    const tc = document.querySelector('#tocbot')
+    tc.onload = tc.onreadystatechange = _ => {
+        if (!(!tc.readyState || tc.readyState === 'loaded' || tc.readyState === 'complete')) return
+        tocbot.init({
+            tocSelector: '#toc',
+            contentSelector: '.article',
+            headingSelector: 'h1, h2, h3',
+            hasInnerContainers: true,
+        })
     }
 </script>

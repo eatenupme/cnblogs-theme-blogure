@@ -1,0 +1,12 @@
+<script>
+    const tc = document.querySelector('#tocbot')
+    tc.onload = tc.onreadystatechange = _ => {
+        if (!(!tc.readyState || tc.readyState === 'loaded' || tc.readyState === 'complete')) return
+        tocbot.init({
+            tocSelector: '#toc',
+            contentSelector: '.article',
+            headingSelector: 'h1, h2, h3',
+            hasInnerContainers: true,
+        })
+    }
+</script>

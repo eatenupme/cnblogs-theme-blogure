@@ -1,0 +1,53 @@
+<!-- post -->
+<template id="blogure-post">
+    <h2
+        style="position:relative;top:calc(var(--block-spacing-horizontal)*-3);height:var(--block-spacing-horizontal);margin-bottom:0;text-align:center;">
+        <kbd style="box-shadow:var(--card-box-shadow);">
+            <a :href="post.url" style="text-align:center;color:var(--code-kbd-color);">{{ post.title }}</a>
+        </kbd>
+    </h2>
+    <template v-if="!(post.async.content ?? true)">
+        <div aria-busy="true"></div>
+    </template>
+    <template v-if="(post.async.content ?? true)">
+        <div v-html="post.content" v-effect="markdown_highlight('.article');Prism.highlightAll();"></div>
+    </template>
+    <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
+        <li v-for="(tag, index) in post.tags ?? []"
+            style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
+            <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
+        </li>
+    </ul>
+    <template v-if="!((post.async.commentForm ?? true) && (vm.async.mention ?? true))">
+        <div aria-busy="true"></div>
+    </template>
+    <template
+        v-if="(post.async.commentForm ?? true) && (vm.async.mention ?? true) && (main.layout === 'post') && (main.post.logined ?? false)">
+        <div v-html="main.post.commentForm ?? ''"
+            v-effect="window.commentEditor=initCommentEditor('tbCommentBody');commentManager.renderComments(0);">
+        </div>
+    </template>
+    <template v-if="(main.layout === 'post') && (main.post.logined ?? false)">
+        <ul :aria-busy="!(post.async.comments ?? true)">
+            <li v-for="(comment, index) in post.comments ?? []">
+                <div>
+                    <img :src="comment.user.avatar" :alt="comment.user.avatar">
+                    <a :href="comment.user.url">{{comment.user.desc}}</a>
+                </div>
+                <div v-html="comment.content ?? ''"></div>
+            </li>
+        </ul>
+    </template>
+    <template v-if="(main.layout === 'post') && !(main.post.logined ?? false)">
+        <div>登录后才能查看或发表评论, 立即 <a rel="nofollow" href="javascript:void(0);" class="underline"
+                onclick="return account.login('!comments');">登录</a></div>
+    </template>
+</template>
+<script>
+    function Post(post) {
+        return {
+            $template: '#blogure-post',
+            post,
+        }
+    }
+</script>
