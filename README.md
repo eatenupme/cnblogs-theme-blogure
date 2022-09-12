@@ -1,4 +1,4 @@
-> 又一个博客园主题 [cnblogs-theme-blogure](https://github.com/mossxzzom/cnblogs-theme-blogure). 它使用 *PetiteVue* 和 *PicoCSS*.  喜欢的话可以帮个点 [⭐Star](https://github.com/mossxzzom/cnblogs-theme-blogure) 么?
+> 又一个博客园主题 [cnblogs-theme-blogure](https://github.com/xnuc/cnblogs-theme-blogure). 它使用 *PetiteVue* 和 *PicoCSS*.  喜欢的话可以帮个点 [⭐Star](https://github.com/xnuc/cnblogs-theme-blogure) 么?
 
 ## 🚀 快速开始
 
@@ -6,9 +6,9 @@
 
 1. 基本设置 -> 博客皮肤 -> SimpleMemory
 1. 代码高亮 -> prismjs[完全支持]
-1. 页面定制 CSS 代码 -> ☑️禁用模板默认CSS -> [source](https://raw.githubusercontent.com/mossxzzom/cnblogs-theme-blogure/master/custom.css)
-1. 页首 HTML 代码 -> [source](https://raw.githubusercontent.com/mossxzzom/cnblogs-theme-blogure/master/page_begin.html)
-1. 页脚 HTML 代码 -> [source](https://raw.githubusercontent.com/mossxzzom/cnblogs-theme-blogure/master/page_end.html)
+1. 页面定制 CSS 代码 -> ☑️禁用模板默认CSS -> [source](https://raw.githubusercontent.com/xnuc/cnblogs-theme-blogure/master/custom.css)
+1. 页首 HTML 代码 -> [source](https://raw.githubusercontent.com/xnuc/cnblogs-theme-blogure/master/page_begin.html)
+1. 页脚 HTML 代码 -> [source](https://raw.githubusercontent.com/xnuc/cnblogs-theme-blogure/master/page_end.html)
 
 <span class="more"></span>
 
@@ -53,9 +53,9 @@
 
 ## 🎹 参与共建 | 二次开发
 
-参与共建, 可以在 [github-issues](https://github.com/mossxzzom/cnblogs-theme-blogure/issues) 中找到 `help wanted` 标签, 发起 [PR](https://github.com/mossxzzom/cnblogs-theme-blogure/compare).
+参与共建, 可以在 [github-issues](https://github.com/xnuc/cnblogs-theme-blogure/issues) 中找到 `help wanted` 标签, 发起 [PR](https://github.com/xnuc/cnblogs-theme-blogure/compare).
 
-二次开发, 基于 `MIT` 请自行 [fork](https://github.com/mossxzzom/cnblogs-theme-blogure/fork).
+二次开发, 基于 `MIT` 请自行 [fork](https://github.com/xnuc/cnblogs-theme-blogure/fork).
 
 开发前, 建议通过以下文章入门.
 
@@ -66,4 +66,4 @@
 
 ## 📝 反馈
 
-通过 [github-issues](https://github.com/mossxzzom/cnblogs-theme-blogure/issues) 或者 [主题说明](https://www.cnblogs.com/mossxzzom/p/cnblogs-theme-blogure.html) 页面评论区.
+通过 [github-issues](https://github.com/xnuc/cnblogs-theme-blogure/issues) 或者 [主题说明](https://www.cnblogs.com/mossxzzom/p/cnblogs-theme-blogure.html) 页面评论区.
