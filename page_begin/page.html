@@ -1,0 +1,19 @@
+<!-- page -->
+<template id="blogure-page">
+    <ul :aria-busy="!(page.async.pages ?? true)" style="display:flex;padding-left:0;justify-content:center;">
+        <li v-for="(p, index) in page.pages ?? []"
+            style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
+            <kbd v-if="p.url == ''" style="background-color:var(--code-kbd-color);">
+                <span style="color: var(--code-kbd-background-color);">{{ p.desc }}</span></kbd>
+            <kbd v-else><a :href="p.url" style="color:var(--code-kbd-color);">{{ p.desc }}</a></kbd>
+        </li>
+    </ul>
+</template>
+<script>
+    function Page(page) {
+        return {
+            $template: '#blogure-page',
+            page,
+        }
+    }
+</script>

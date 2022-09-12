@@ -1,0 +1,19 @@
+<!-- main -->
+<template id="blogure-main">
+    <template v-if="main.layout === 'post'">
+        <article v-scope="Post(main.post)" class="article"></article>
+    </template>
+    <!-- TODO why dont use v-if - because BUG !!! or i cant use -->
+    <article v-scope="Post(post)" class="article" v-for="(post, index) in main.posts ?? []"></article>
+    <template v-if="main.layout === 'posts'">
+        <div v-scope="Page(main.page)"></div>
+    </template>
+</template>
+<script>
+    function Main(main) {
+        return {
+            $template: '#blogure-main',
+            main,
+        }
+    }
+</script>

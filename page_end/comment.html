@@ -1,0 +1,28 @@
+<script>
+    $(document).ajaxComplete((event, xhr, settings) => {
+        if (settings.url.indexOf('PostComment/Add.aspx') < 0) return
+        window.vm.main.post.async.comments = false
+        Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`).then((r) => {
+            comments = []
+            const tempdom = document.createElement('div')
+            tempdom.innerHTML = r.responseText.trim()
+            const commentsdoms = tempdom.querySelectorAll('.feedbackItem')
+            for (let index = 0; index < commentsdoms.length; index++) {
+                const commentdom = commentsdoms[index]
+                const comment = {}
+                comment.layer = commentdom.querySelector('.layer').innerText.trim()
+                comment.isSelf = commentdom.querySelector('.louzhu') ? true : false
+                const adoms = commentdom.querySelectorAll('.feedbackListSubtitle a')
+                const userdom = adoms[adoms.length - 1]
+                comment.user = { desc: userdom.innerText.trim(), url: userdom.href.trim() }
+                comment.content = commentdom.querySelectorAll('.feedbackCon div')[0].innerHTML.trim()
+                const spandoms = commentdom.querySelectorAll('.feedbackCon span')
+                const avatardom = spandoms[spandoms.length - 1]
+                comment.user.avatar = avatardom.innerText.trim()
+                comments.push(comment)
+            }
+            window.vm.main.post.comments = comments
+            window.vm.main.post.async.comments = true
+        })
+    })
+</script>
