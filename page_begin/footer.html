@@ -4,7 +4,7 @@
         <a href="https://github.com/xnuc/cnblogs-theme-blogure">source</a></small>
     <label for="switch">
         <input type="checkbox" style="position:fixed;bottom:var(--spacing);left:var(--spacing);" id="dark-switch"
-            role="switch" @click="darkSwitcher($el)">
+            role="switch" @click="darkSwitcher($el)" :checked="localStorage.getItem('data-theme') === 'dark' ?? false">
     </label>
     <template v-if="vm.main.layout === 'post'">
         <label for="switch">
@@ -23,11 +23,19 @@
             $template: '#blogure-footer',
         }
     }
-    
+
     function darkSwitcher(dom) {
+        darkSwitcherWithStorage(dom)
         if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
         if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
     }
+
+    function darkSwitcherWithStorage(dom) {
+        if (!window.localStorage) return
+        if (dom.checked) localStorage.setItem('data-theme', 'dark')
+        if (!dom.checked) localStorage.setItem('data-theme', 'light')
+    }
+    if (window.localStorage) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
 
     function tocSwitcher(dom) {
         if (dom.checked) {
