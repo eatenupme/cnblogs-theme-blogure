@@ -51,6 +51,14 @@
 + [PetiteVue ~6kb](https://github.com/vuejs/petite-vue)
 + [PicoCSS ~30kb](https://picocss.com/)
 
+## 🎯 构建流程
+
+### Linux
+
+```sh
+bash merge.sh
+```
+
 ## 🎹 参与共建 | 二次开发
 
 参与共建, 可以在 [github-issues](https://github.com/xnuc/cnblogs-theme-blogure/issues) 中找到 `help wanted` 标签, 发起 [PR](https://github.com/xnuc/cnblogs-theme-blogure/compare).
