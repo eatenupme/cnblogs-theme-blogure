@@ -72,6 +72,10 @@ bash .merge
 - [博客园主题美化 基础知识](https://www.cnblogs.com/mossxzzom/p/16635596.html)
 - [博客园主题美化 进阶提升](https://www.cnblogs.com/mossxzzom/p/16653264.html)
 
+### API
+
+- [blogure-api](https://xnuc.github.io/cnblogs-theme-blogure/index.html)
+
 ## 📝 反馈
 
 通过 [github-issues](https://github.com/xnuc/cnblogs-theme-blogure/issues) 或者 [主题说明](https://www.cnblogs.com/mossxzzom/p/cnblogs-theme-blogure.html) 页面评论区.
