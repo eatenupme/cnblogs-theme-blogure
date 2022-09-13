@@ -25,30 +25,6 @@
             $template: '#blogure-footer',
         }
     }
-
-    function darkSwitcher(dom) {
-        darkSwitcherWithStorage(dom)
-        if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
-        if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
-    }
-
-    function darkSwitcherWithStorage(dom) {
-        if (!window.localStorage) return
-        if (dom.checked) localStorage.setItem('data-theme', 'dark')
-        if (!dom.checked) localStorage.setItem('data-theme', 'light')
-    }
-    if (window.localStorage) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
-
-    function tocSwitcher(dom) {
-        if (dom.checked) {
-            document.querySelector('#toc').style.transform = 'translate(0)'
-            document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
-        }
-        if (!dom.checked) {
-            document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
-            document.querySelector('#toc').style.boxShadow = ''
-        }
-    }
 </script><!-- header -->
 <template id="blogure-header">
     <nav style="align-items:center;">
@@ -71,9 +47,6 @@
             header,
         }
     }
-</script><script>
-    function markdown_highlight_swap() { } // 如果保证可以触发到这个方法, 是可以对 `page_end.html` 透明
-    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
 </script><!-- main -->
 <template id="blogure-main">
     <template v-if="main.layout === 'post'">
@@ -122,7 +95,7 @@
         <div aria-busy="true"></div>
     </template>
     <template v-if="(post.async.content ?? true)">
-        <div v-html="post.content" v-effect="markdown_highlight('.article');Prism.highlightAll();"></div>
+        <div v-html="post.content" v-effect="markdown_highlight('.article');"></div>
     </template>
     <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
         <li v-for="(tag, index) in post.tags ?? []"
@@ -162,4 +135,25 @@
             post,
         }
     }
+</script><script>/**
+ * 代码高亮相关
+ * @namespace codehighlight 
+ */
+
+
+/**
+ * 博客园 markdown_highlight 是异步的, 有几率会造成代码无法显示, 采取了比较trick的方式解决, 就是直接patch
+ * 会在博客园调用前patch掉, 在正常调用前patch回来.
+ * @memberof codehighlight
+ */
+function markdown_highlight_swap() { }
+
+/**
+ * @see markdown_highlight_swap
+ * @memberof codehighlight
+ */
+function stub() {
+    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+}
+stub()
 </script>

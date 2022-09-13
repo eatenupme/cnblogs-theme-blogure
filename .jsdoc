@@ -1,0 +1,3 @@
+#!/bin/bash
+
+jsdoc -c jsdoc.json --readme README.md

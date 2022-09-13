@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cat symbol/DONOTEDIT layout.html page_begin/*.html symbol/SCRIPT page_begin/js/* symbol/SCRIPTEND > page_begin.html
+cat symbol/DONOTEDIT lib.html page_end/*.html symbol/SCRIPT page_end/js/* symbol/SCRIPTEND > page_end.html
+jsdoc -c jsdoc.json --readme README.md

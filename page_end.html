@@ -1,5 +1,7 @@
-<!-- DO NOT EDIT --><script id="petite-vue" src="https://unpkg.com/petite-vue@0.4.1" defer></script>
-<script id="tocbot" src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js" defer></script>
+<!-- DO NOT EDIT --><script onload="petitevueOnload(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/petite-vue@0.4.1.js"
+    defer></script>
+<script onload="tocbotOnload(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/tocbot@4.11.1.js"
+    defer></script>
 <script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script><script>
     $(document).ajaxComplete((event, xhr, settings) => {
         if (settings.url.indexOf('PostComment/Add.aspx') < 0) return
@@ -52,8 +54,6 @@
         console.log(header)
         return header
     }
-</script><script>
-    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
 </script><script>
     function Get(url) {
         const xhr = new XMLHttpRequest()
@@ -135,9 +135,12 @@
         return page
     }
 </script><script>
-    const pv = document.querySelector('#petite-vue')
-    pv.onload = pv.onreadystatechange = _ => {
-        if (!(!pv.readyState || pv.readyState === 'loaded' || pv.readyState === 'complete')) return
+    /**
+     * petite-vue 加载完成回调方法, 主要将 body 替换为 vue-dom 并 mount, 设置 visible 为 true.
+     * @param {Element} dom 触发回调的元素, 用于触发回调后初始化 petite-vue 目录生成.
+     */
+    function petitevueOnload(dom) {
+        if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
         // save to origin 
         const originBody = document.createElement('html')
         originBody.innerHTML = document.body.innerHTML
@@ -305,22 +308,89 @@
         console.log(main)
         return main
     }
-</script><script>
-    function highlightNumber(dom) {
-        if (!enableCodeLineNumber) return
-        dom.querySelectorAll('pre code').forEach(codedom => {
-            codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
-        })
+</script><script>/**
+ * @see markdown_highlight_swap
+ * @memberof codehighlight
+ */
+function reset() {
+    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+}
+reset()
+
+/**
+ * 控制代码高亮是否显示行号
+ * @memberof codehighlight
+ */
+function highlightNumber(dom) {
+    if (!enableCodeLineNumber) return
+    dom.querySelectorAll('pre code').forEach(codedom => {
+        codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
+    })
+}/**
+ * 主题的亮色与暗色
+ * @namespace themedata
+ */
+
+/**
+ * 切换并尝试存储用户新的状态
+ * @memberof themedata
+ */
+function darkSwitcher(dom) {
+    darkSwitcherWithStorage(dom)
+    if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
+    if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
+}
+
+/**
+ * 存储用户更改的状态
+ * @memberof themedata
+ */
+function darkSwitcherWithStorage(dom) {
+    if (!window.localStorage) return
+    if (dom.checked) localStorage.setItem('data-theme', 'dark')
+    if (!dom.checked) localStorage.setItem('data-theme', 'light')
+}
+
+/**
+ * 初始化, 如果上一次用户更改了状态
+ * @memberof themedata
+ */
+function initDataTheme() {
+    if (window.localStorage) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
+}
+initDataTheme()/**
+ * 文章目录生成
+ * @namespace toc
+ */
+
+/**
+ * tocbot 加载完成回调, 初始化 '.article' 中的三级标题 到 '#toc'.
+ * @memberof toc
+ * @param {Element} dom 触发回调的元素, 用于触发回调后初始化 toc 目录生成.
+ */
+function tocbotOnload(dom) {
+    if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
+    tocbot.init({
+        tocSelector: '#toc',
+        contentSelector: '.article',
+        headingSelector: 'h1, h2, h3',
+        hasInnerContainers: true,
+    })
+}
+
+/**
+ * tocbot 改变 css 样式, 弹出目录承载容器.
+ * @memberof toc
+ * @param {Element} dom 触发回调的元素, 用于弹出目录承载容器.
+ */
+function tocSwitcher(dom) {
+    if (dom.checked) {
+        document.querySelector('#toc').style.transform = 'translate(0)'
+        document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
     }
-</script><script>
-    const tc = document.querySelector('#tocbot')
-    tc.onload = tc.onreadystatechange = _ => {
-        if (!(!tc.readyState || tc.readyState === 'loaded' || tc.readyState === 'complete')) return
-        tocbot.init({
-            tocSelector: '#toc',
-            contentSelector: '.article',
-            headingSelector: 'h1, h2, h3',
-            hasInnerContainers: true,
-        })
+    if (!dom.checked) {
+        document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
+        document.querySelector('#toc').style.boxShadow = ''
     }
+}
 </script>

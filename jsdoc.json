@@ -1,0 +1,15 @@
+{
+    "source": {
+        "include": [
+            "page_begin/js",
+            "page_end/js"
+        ]
+    },
+    "opts": {
+        "encoding": "utf8",
+        "destination": "./docs/"
+    },
+    "plugins": [
+        "plugins/markdown"
+    ]
+}

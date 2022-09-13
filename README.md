@@ -56,7 +56,7 @@
 ### Linux
 
 ```sh
-bash merge.sh
+bash .merge
 ```
 
 ## 🎹 参与共建 | 二次开发

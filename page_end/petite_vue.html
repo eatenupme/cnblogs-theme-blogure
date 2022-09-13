@@ -1,7 +1,10 @@
 <script>
-    const pv = document.querySelector('#petite-vue')
-    pv.onload = pv.onreadystatechange = _ => {
-        if (!(!pv.readyState || pv.readyState === 'loaded' || pv.readyState === 'complete')) return
+    /**
+     * petite-vue 加载完成回调方法, 主要将 body 替换为 vue-dom 并 mount, 设置 visible 为 true.
+     * @param {Element} dom 触发回调的元素, 用于触发回调后初始化 petite-vue 目录生成.
+     */
+    function petitevueOnload(dom) {
+        if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
         // save to origin 
         const originBody = document.createElement('html')
         originBody.innerHTML = document.body.innerHTML
