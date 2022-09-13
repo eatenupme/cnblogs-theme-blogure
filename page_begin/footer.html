@@ -23,28 +23,4 @@
             $template: '#blogure-footer',
         }
     }
-
-    function darkSwitcher(dom) {
-        darkSwitcherWithStorage(dom)
-        if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
-        if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
-    }
-
-    function darkSwitcherWithStorage(dom) {
-        if (!window.localStorage) return
-        if (dom.checked) localStorage.setItem('data-theme', 'dark')
-        if (!dom.checked) localStorage.setItem('data-theme', 'light')
-    }
-    if (window.localStorage) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
-
-    function tocSwitcher(dom) {
-        if (dom.checked) {
-            document.querySelector('#toc').style.transform = 'translate(0)'
-            document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
-        }
-        if (!dom.checked) {
-            document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
-            document.querySelector('#toc').style.boxShadow = ''
-        }
-    }
 </script>
