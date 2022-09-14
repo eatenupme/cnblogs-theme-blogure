@@ -1,7 +1,0 @@
-<script>
-    const mc = document.querySelector('#mention')
-    mc.onload = mc.onreadystatechange = _ => {
-        if (!(!mc.readyState || mc.readyState === 'loaded' || mc.readyState === 'complete')) return
-        window.vm.async.mention = true
-    }
-</script>

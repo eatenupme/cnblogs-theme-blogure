@@ -2,12 +2,276 @@
     defer></script>
 <script onload="tocbotOnload(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/tocbot@4.11.1.js"
     defer></script>
-<script id="mention" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script><script>
-    $(document).ajaxComplete((event, xhr, settings) => {
-        if (settings.url.indexOf('PostComment/Add.aspx') < 0) return
-        window.vm.main.post.async.comments = false
-        Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`).then((r) => {
-            comments = []
+<script onload="window.vm.async.mention = true" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script><script>/**
+ * 全局
+ * @namespace global
+ */
+
+/**
+ * IIFE
+ * @see markdown_highlight_swap
+ * @memberof global
+ */
+function reset() {
+    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+}
+reset()
+
+/**
+ * 读取WindowLocalStorage中设置的亮色暗色状态 IIFE
+ * @memberof global
+ */
+function initDataTheme() {
+    if (window.localStorage) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
+}
+initDataTheme()
+
+/**
+ * onload触发设置body可见, 触发各个组件的数据加载, 挂载dom
+ * @memberof global
+ * @param {Element} dom
+ */
+function petitevueOnload(dom) {
+    if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
+    // save to origin 
+    const originBody = document.createElement('html')
+    originBody.innerHTML = document.body.innerHTML
+    // body html update
+    document.body.innerHTML = originBody.querySelector('#page_begin_html').innerHTML
+    // body css update
+    document.body.classList.remove('skin-simplememory')
+    document.body.classList.remove('has-navbar')
+    document.body.classList.remove('mathjax2')
+    document.body.classList.remove('no-navbar')
+    document.body.style.visibility = 'visible'
+    // body html append token
+    const tokendom = originBody.querySelector('#antiforgery_token')
+    document.body.appendChild(tokendom)
+    // vm mount
+    const vm = (window.vm = PetiteVue.reactive({}))
+    vm.async = {}
+    vm.header = GetHeader(originBody)
+    vm.main = GetMain(originBody)
+    PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
+}
+
+/**
+ * 代码行号显示 兼容博客园自身配置
+ * @memberof global
+ * @param {Element} dom
+ */
+function highlightNumber(dom) {
+    if (!enableCodeLineNumber) return
+    dom.querySelectorAll('pre code').forEach(codedom => {
+        codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
+    })
+}
+
+/**
+ * 更改的亮色暗色状态并存储到WindowLocalStorage
+ * @memberof global
+ * @param {Element} dom
+ */
+function darkSwitcherWithStorage(dom) {
+    if (!window.localStorage) return
+    if (dom.checked) localStorage.setItem('data-theme', 'dark')
+    if (!dom.checked) localStorage.setItem('data-theme', 'light')
+}
+
+/**
+ * 点击触发亮色暗色切换
+ * @memberof global
+ * @param {Element} dom
+ */
+function darkSwitcher(dom) {
+    darkSwitcherWithStorage(dom)
+    if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
+    if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
+}
+
+/**
+ * 原生xhr
+ * @memberof global
+ * @param {String} url
+ */
+function Get(url) {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', url, true)
+    xhr.send()
+    return new Promise(r => {
+        xhr.onreadystatechange = _ => {
+            if (xhr.readyState !== 4) return
+            r(xhr)
+        }
+    })
+}/**
+ * 博客标题导航等
+ * @namespace header
+ */
+
+/**
+ * header数据加载
+ * @memberof header
+ * @param {Element} originBody
+ */
+function GetHeader(originBody) {
+    // def
+    const header = (vm.header = {})
+    const headerdom = originBody.querySelector('#header')
+    // h1h2
+    const h1dom = headerdom.querySelector('h1 a')
+    header.url = h1dom.href.trim()
+    header.title = h1dom.innerText.trim()
+    const h2dom = headerdom.querySelector('h2')
+    header.subtitle = h2dom.innerText.trim()
+    // nav
+    const navdom = headerdom.querySelector('#navList')
+    const lidoms = navdom.querySelectorAll('li a')
+    header.navs = []
+    for (let index = 0; index < lidoms.length; index++) {
+        const lidom = lidoms[index]
+        const nav = {}
+        nav.url = lidom.href.trim()
+        nav.desc = lidom.innerText.trim()
+        header.navs.push(nav)
+    }
+    console.log(header)
+    return header
+}/**
+ * 主体content, 目前用于承载{@link MainPosts,Page} {@link MainPost}
+ * @namespace main
+ */
+
+/**
+ * main数据加载
+ * @memberof main
+ * @param {Element} originBody
+ */
+function GetMain(originBody) {
+    if (originBody.querySelector('#post_detail')) {
+        return MainPost(originBody.querySelector('#post_detail'))
+    }
+    if (originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) {
+        return MainPosts(originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle'),
+            originBody.querySelectorAll('.postDesc, .postDesc2, .entrylistItemPostDesc'), originBody)
+    }
+    return { layout: '' }
+}
+/**
+ * 随笔[文章]
+ * @namespace post
+ */
+
+/**
+ * 网络触发重新渲染评论
+ * @memberof post
+ * @param {ajax.settings} settings
+ */
+$(document).ajaxComplete((_e, _x, settings) => {
+    if (settings.url.indexOf('PostComment/Add.aspx') < 0) return
+    window.vm.main.post.async.comments = false
+    Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`).then((r) => {
+        comments = []
+        const tempdom = document.createElement('div')
+        tempdom.innerHTML = r.responseText.trim()
+        const commentsdoms = tempdom.querySelectorAll('.feedbackItem')
+        for (let index = 0; index < commentsdoms.length; index++) {
+            const commentdom = commentsdoms[index]
+            const comment = {}
+            comment.layer = commentdom.querySelector('.layer').innerText.trim()
+            comment.isSelf = commentdom.querySelector('.louzhu') ? true : false
+            const adoms = commentdom.querySelectorAll('.feedbackListSubtitle a')
+            const userdom = adoms[adoms.length - 1]
+            comment.user = { desc: userdom.innerText.trim(), url: userdom.href.trim() }
+            comment.content = commentdom.querySelectorAll('.feedbackCon div')[0].innerHTML.trim()
+            const spandoms = commentdom.querySelectorAll('.feedbackCon span')
+            const avatardom = spandoms[spandoms.length - 1]
+            comment.user.avatar = avatardom.innerText.trim()
+            comments.push(comment)
+        }
+        window.vm.main.post.comments = comments
+        window.vm.main.post.async.comments = true
+    })
+})
+
+/**
+ * onload触发渲染目录
+ * @memberof post
+ * @param {Element} dom
+ */
+function tocbotOnload(dom) {
+    if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
+    tocbot.init({
+        tocSelector: '#toc',
+        contentSelector: '.article',
+        headingSelector: 'h1, h2, h3',
+        hasInnerContainers: true,
+    })
+}
+
+/**
+ * 点击触发显示目录
+ * @memberof post
+ * @param {Element} dom
+ */
+function tocSwitcher(dom) {
+    if (dom.checked) {
+        document.querySelector('#toc').style.transform = 'translate(0)'
+        document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
+    }
+    if (!dom.checked) {
+        document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
+        document.querySelector('#toc').style.boxShadow = ''
+    }
+}
+
+/**
+ * post数据加载
+ * @memberof post
+ * @param {Element} detaildom
+ */
+function MainPost(detaildom) {
+    // def
+    const main = (vm.main = {})
+    main.layout = 'post'
+    main.post = {}
+    main.post.async = {}
+    // title url
+    const titledom = detaildom.querySelector('.postTitle a')
+    main.post.url = titledom.href.trim()
+    main.post.title = titledom.innerText.trim()
+    // content
+    const bodydom = detaildom.querySelector('#cnblogs_post_body')
+    highlightNumber(bodydom)
+    main.post.content = bodydom.innerHTML.trim()
+    // tags(async)
+    main.post.async.tags = false
+    main.post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${cb_entryId}`)
+    main.post.async.tagsPromise.then(((main) => {
+        return (r) => {
+            const tempdom = document.createElement('div')
+            tempdom.innerHTML = r.responseText.trim()
+            const tagsdoms = tempdom.querySelectorAll('a')
+            const tags = []
+            for (let index = 0; index < tagsdoms.length; index++) {
+                const tagdom = tagsdoms[index]
+                const tag = {}
+                tag.desc = tagdom.innerText.trim()
+                tag.url = tagdom.href.trim()
+                tags.push(tag)
+            }
+            main.post.tags = tags
+            main.post.async.tags = true
+        }
+    })(vm.main))
+    // comments(async)
+    main.post.logined = isLogined
+    if (!main.post.logined) return main
+    main.post.async.comments = false
+    main.post.async.commentsPromise = Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`)
+    main.post.comments = []
+    main.post.async.commentsPromise.then(((main) => {
+        return (r) => {
             const tempdom = document.createElement('div')
             tempdom.innerHTML = r.responseText.trim()
             const commentsdoms = tempdom.querySelectorAll('.feedbackItem')
@@ -23,78 +287,139 @@
                 const spandoms = commentdom.querySelectorAll('.feedbackCon span')
                 const avatardom = spandoms[spandoms.length - 1]
                 comment.user.avatar = avatardom.innerText.trim()
-                comments.push(comment)
+                main.post.comments.push(comment)
             }
-            window.vm.main.post.comments = comments
-            window.vm.main.post.async.comments = true
-        })
-    })
-</script><script>
-    function GetHeader(originBody) {
+            main.post.async.comments = true
+        }
+    })(vm.main))
+    main.post.async.commentForm = false
+    main.post.async.commentsForm = Get(getAjaxBaseUrl() + `CommentForm.aspx?postId=${cb_entryId}`)
+    main.post.async.commentsForm.then(((main) => {
+        return (r) => {
+            const tempdom = document.createElement('div')
+            tempdom.innerHTML = r.responseText.trim()
+            main.post.commentForm = ''
+            const jsdoms = []
+            for (let index = 0; index < tempdom.children.length; index++) {
+                const formdom = tempdom.children[index]
+                if (formdom.tagName !== 'SCRIPT') main.post.commentForm += formdom.outerHTML
+            }
+            main.post.async.commentForm = true
+        }
+    })(vm.main))
+    console.log(main)
+    return main
+}/**
+ * 随笔[文章]列表
+ * @namespace posts
+ */
+
+/**
+ * posts数据加载
+ * @memberof posts
+ * @param {Element} postlistdoms
+ * @param {Element} descsdoms
+ * @param {Element} pagedoms
+ */
+function MainPosts(postlistdoms, descsdoms, pagedoms) {
+    // def
+    const main = (vm.main = {})
+    main.layout = 'posts'
+    main.page = MainPage(pagedoms)
+    main.posts = []
+    // tags, content(async): optimization cycle complex
+    const callback = (post) => {
+        return (r) => {
+            const tempdom = document.createElement('html')
+            tempdom.innerHTML = r[0].responseText
+            const tagsdoms = tempdom.querySelectorAll('a')
+            const tags = []
+            for (let index = 0; index < tagsdoms.length; index++) {
+                const tagdom = tagsdoms[index]
+                const tag = {}
+                tag.desc = tagdom.innerText.trim()
+                tag.url = tagdom.href.trim()
+                tags.push(tag)
+            }
+            post.tags = tags
+            post.async.tags = true
+
+            tempdom.innerHTML = r[1].responseText
+            const detaildom = tempdom.querySelector('#post_detail')
+            const titledom = detaildom.querySelector('.postTitle a')
+            post.url = titledom.href.trim()
+            post.title = titledom.innerText.trim()
+            const bodydom = detaildom.querySelector('#cnblogs_post_body')
+            highlightNumber(bodydom)
+            post.content = bodydom.innerHTML.trim()
+            post.async.content = true
+            if (!bodydom.querySelector('.more')) return
+            const desc = { content: '' }
+            for (let index = 0; index < bodydom.children.length; index++) {
+                const childdom = bodydom.children[index]
+                if (childdom == bodydom.querySelector('.more') || childdom.querySelector('.more')) break
+                desc.content += childdom.outerHTML
+            }
+            post.content = desc.content
+        }
+    }
+    const l = Math.min(postlistdoms.length, descsdoms.length)
+    for (let index = 0; index < l; index++) {
+        const adom = postlistdoms[index].querySelector('a')
         // def
-        const header = (vm.header = {})
-        const headerdom = originBody.querySelector('#header')
-        // h1h2
-        const h1dom = headerdom.querySelector('h1 a')
-        header.url = h1dom.href.trim()
-        header.title = h1dom.innerText.trim()
-        const h2dom = headerdom.querySelector('h2')
-        header.subtitle = h2dom.innerText.trim()
-        // nav
-        const navdom = headerdom.querySelector('#navList')
-        const lidoms = navdom.querySelectorAll('li a')
-        header.navs = []
-        for (let index = 0; index < lidoms.length; index++) {
-            const lidom = lidoms[index]
-            const nav = {}
-            nav.url = lidom.href.trim()
-            nav.desc = lidom.innerText.trim()
-            header.navs.push(nav)
-        }
-        console.log(header)
-        return header
+        const post = {}
+        post.async = {}
+        post.title = adom.innerText.trim()
+        post.url = adom.href.trim()
+        post.async.contentPromise = Get(post.url)
+        post.async.content = false
+        // async
+        const bdoms = descsdoms[index].querySelectorAll('a')
+        const postid = new URLSearchParams(new URL(bdoms[bdoms.length - 1].href).search).get('postid')
+        post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${postid}`)
+        post.async.tags = false
+        main.posts.push(post)
+        Promise.all([post.async.tagsPromise, post.async.contentPromise])
+            .then(callback(vm.main.posts[index]))
     }
-</script><script>
-    function Get(url) {
-        const xhr = new XMLHttpRequest()
-        xhr.open('GET', url, true)
-        xhr.send()
-        return new Promise(r => {
-            xhr.onreadystatechange = _ => {
-                if (xhr.readyState !== 4) return
-                r(xhr)
-            }
-        })
+    console.log(main)
+    return main
+}
+
+/**
+ * page数据加载
+ * @memberof posts
+ * @param {Element} originBody
+ */
+function MainPage(originBody) {
+    const page = (vm.main.page = {})
+    page.pages = []
+    page.async = {}
+    if (!((originBody.querySelector('.Pager, .pager') || originBody.querySelector('#nav_next_page a')))) {
+        console.log(page)
+        return page
     }
-</script><script>
-    function GetMain(originBody) {
-        if (originBody.querySelector('#post_detail')) {
-            return MainPost(originBody.querySelector('#post_detail'))
+    const pagerdom = originBody.querySelector('.Pager') ? originBody.querySelector('.Pager') : originBody.querySelector('.pager')
+    if (pagerdom) {
+        const pagenodes = pagerdom.childNodes
+        for (let index = 0; index < pagenodes.length; index++) {
+            const pagenode = pagenodes[index]
+            if (pagenode.textContent.trim() == '') continue
+            const p = {}
+            p.desc = pagenode.textContent.trim()
+            p.url = pagenode.href ? pagenode.href.trim() : ''
+            page.pages.push(p)
         }
-        if (originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) {
-            return MainPosts(originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle'),
-                originBody.querySelectorAll('.postDesc, .postDesc2, .entrylistItemPostDesc'))
-        }
-        return { layout: '' }
+        console.log(page)
+        return page
     }
-</script><script>
-    const mc = document.querySelector('#mention')
-    mc.onload = mc.onreadystatechange = _ => {
-        if (!(!mc.readyState || mc.readyState === 'loaded' || mc.readyState === 'complete')) return
-        window.vm.async.mention = true
-    }
-</script><script>
-    function GetPage(originBody) {
-        const page = (vm.main.page = {})
-        page.pages = []
-        page.async = {}
-        if (!((originBody.querySelector('.Pager, .pager') || originBody.querySelector('#nav_next_page a')))) {
-            console.log(page)
-            return page
-        }
-        const pagerdom = originBody.querySelector('.Pager') ? originBody.querySelector('.Pager') : originBody.querySelector('.pager')
-        if (pagerdom) {
-            const pagenodes = pagerdom.childNodes
+    page.async.pagePromise = Get(originBody.querySelector('#nav_next_page a').href.trim())
+    page.async.pages = false
+    page.async.pagePromise.then(((page) => {
+        return (r) => {
+            const tempdom = document.createElement('html')
+            tempdom.innerHTML = r.responseText
+            const pagenodes = tempdom.querySelector('.Pager, .pager').childNodes
             for (let index = 0; index < pagenodes.length; index++) {
                 const pagenode = pagenodes[index]
                 if (pagenode.textContent.trim() == '') continue
@@ -103,294 +428,16 @@
                 p.url = pagenode.href ? pagenode.href.trim() : ''
                 page.pages.push(p)
             }
-            console.log(page)
-            return page
+            page.pages.shift() // const('上一页')
+            if (page.pages.length == 2) page.pages.push({ 'desc': '下一页', url: r.responseURL })
+            [page.pages[0], page.pages[1]] = [page.pages[1], page.pages[2]]
+            page.pages[0].desc = '1'
+            page.pages[0].url = ''
+            page.pages[1].desc = '2'
+            page.pages[1].url = r.responseURL
+            page.async.pages = true
         }
-        page.async.pagePromise = Get(originBody.querySelector('#nav_next_page a').href.trim())
-        page.async.pages = false
-        page.async.pagePromise.then(((page) => {
-            return (r) => {
-                const tempdom = document.createElement('html')
-                tempdom.innerHTML = r.responseText
-                const pagenodes = tempdom.querySelector('.Pager, .pager').childNodes
-                for (let index = 0; index < pagenodes.length; index++) {
-                    const pagenode = pagenodes[index]
-                    if (pagenode.textContent.trim() == '') continue
-                    const p = {}
-                    p.desc = pagenode.textContent.trim()
-                    p.url = pagenode.href ? pagenode.href.trim() : ''
-                    page.pages.push(p)
-                }
-                page.pages.shift() // const('上一页')
-                if (page.pages.length == 2) page.pages.push({ 'desc': '下一页', url: r.responseURL })
-                [page.pages[0], page.pages[1]] = [page.pages[1], page.pages[2]]
-                page.pages[0].desc = '1'
-                page.pages[0].url = ''
-                page.pages[1].desc = '2'
-                page.pages[1].url = r.responseURL
-                page.async.pages = true
-            }
-        })(vm.main.page))
-        console.log(page)
-        return page
-    }
-</script><script>
-    /**
-     * petite-vue 加载完成回调方法, 主要将 body 替换为 vue-dom 并 mount, 设置 visible 为 true.
-     * @param {Element} dom 触发回调的元素, 用于触发回调后初始化 petite-vue 目录生成.
-     */
-    function petitevueOnload(dom) {
-        if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
-        // save to origin 
-        const originBody = document.createElement('html')
-        originBody.innerHTML = document.body.innerHTML
-        // body html update
-        document.body.innerHTML = originBody.querySelector('#page_begin_html').innerHTML
-        // body css update
-        document.body.classList.remove('skin-simplememory')
-        document.body.classList.remove('has-navbar')
-        document.body.classList.remove('mathjax2')
-        document.body.classList.remove('no-navbar')
-        document.body.style.visibility = 'visible'
-        // body html append token
-        const tokendom = originBody.querySelector('#antiforgery_token')
-        document.body.appendChild(tokendom)
-        // vm mount
-        const vm = (window.vm = PetiteVue.reactive({}))
-        vm.async = {}
-        vm.header = GetHeader(originBody)
-        vm.main = GetMain(originBody)
-        vm.main.page = GetPage(originBody)
-        PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
-    }
-</script><script>
-    function MainPost(detaildom) {
-        // def
-        const main = (vm.main = {})
-        main.layout = 'post'
-        main.post = {}
-        main.post.async = {}
-        // title url
-        const titledom = detaildom.querySelector('.postTitle a')
-        main.post.url = titledom.href.trim()
-        main.post.title = titledom.innerText.trim()
-        // content
-        const bodydom = detaildom.querySelector('#cnblogs_post_body')
-        highlightNumber(bodydom)
-        main.post.content = bodydom.innerHTML.trim()
-        // tags(async)
-        main.post.async.tags = false
-        main.post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${cb_entryId}`)
-        main.post.async.tagsPromise.then(((main) => {
-            return (r) => {
-                const tempdom = document.createElement('div')
-                tempdom.innerHTML = r.responseText.trim()
-                const tagsdoms = tempdom.querySelectorAll('a')
-                const tags = []
-                for (let index = 0; index < tagsdoms.length; index++) {
-                    const tagdom = tagsdoms[index]
-                    const tag = {}
-                    tag.desc = tagdom.innerText.trim()
-                    tag.url = tagdom.href.trim()
-                    tags.push(tag)
-                }
-                main.post.tags = tags
-                main.post.async.tags = true
-            }
-        })(vm.main))
-        // comments(async)
-        main.post.logined = isLogined
-        if (!main.post.logined) return main
-        main.post.async.comments = false
-        main.post.async.commentsPromise = Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`)
-        main.post.comments = []
-        main.post.async.commentsPromise.then(((main) => {
-            return (r) => {
-                const tempdom = document.createElement('div')
-                tempdom.innerHTML = r.responseText.trim()
-                const commentsdoms = tempdom.querySelectorAll('.feedbackItem')
-                for (let index = 0; index < commentsdoms.length; index++) {
-                    const commentdom = commentsdoms[index]
-                    const comment = {}
-                    comment.layer = commentdom.querySelector('.layer').innerText.trim()
-                    comment.isSelf = commentdom.querySelector('.louzhu') ? true : false
-                    const adoms = commentdom.querySelectorAll('.feedbackListSubtitle a')
-                    const userdom = adoms[adoms.length - 1]
-                    comment.user = { desc: userdom.innerText.trim(), url: userdom.href.trim() }
-                    comment.content = commentdom.querySelectorAll('.feedbackCon div')[0].innerHTML.trim()
-                    const spandoms = commentdom.querySelectorAll('.feedbackCon span')
-                    const avatardom = spandoms[spandoms.length - 1]
-                    comment.user.avatar = avatardom.innerText.trim()
-                    main.post.comments.push(comment)
-                }
-                main.post.async.comments = true
-            }
-        })(vm.main))
-        main.post.async.commentForm = false
-        main.post.async.commentsForm = Get(getAjaxBaseUrl() + `CommentForm.aspx?postId=${cb_entryId}`)
-        main.post.async.commentsForm.then(((main) => {
-            return (r) => {
-                const tempdom = document.createElement('div')
-                tempdom.innerHTML = r.responseText.trim()
-                main.post.commentForm = ''
-                const jsdoms = []
-                for (let index = 0; index < tempdom.children.length; index++) {
-                    const formdom = tempdom.children[index]
-                    if (formdom.tagName !== 'SCRIPT') main.post.commentForm += formdom.outerHTML
-                }
-                main.post.async.commentForm = true
-            }
-        })(vm.main))
-        console.log(main)
-        return main
-    }
-</script><script>
-    function MainPosts(postlistdoms, descsdoms) {
-        // def
-        const main = (vm.main = {})
-        main.layout = 'posts'
-        main.posts = []
-        // tags, content(async): optimization cycle complex
-        const callback = (post) => {
-            return (r) => {
-                const tempdom = document.createElement('html')
-                tempdom.innerHTML = r[0].responseText
-                const tagsdoms = tempdom.querySelectorAll('a')
-                const tags = []
-                for (let index = 0; index < tagsdoms.length; index++) {
-                    const tagdom = tagsdoms[index]
-                    const tag = {}
-                    tag.desc = tagdom.innerText.trim()
-                    tag.url = tagdom.href.trim()
-                    tags.push(tag)
-                }
-                post.tags = tags
-                post.async.tags = true
-
-                tempdom.innerHTML = r[1].responseText
-                const detaildom = tempdom.querySelector('#post_detail')
-                const titledom = detaildom.querySelector('.postTitle a')
-                post.url = titledom.href.trim()
-                post.title = titledom.innerText.trim()
-                const bodydom = detaildom.querySelector('#cnblogs_post_body')
-                highlightNumber(bodydom)
-                post.content = bodydom.innerHTML.trim()
-                post.async.content = true
-                if (!bodydom.querySelector('.more')) return
-                const desc = { content: '' }
-                for (let index = 0; index < bodydom.children.length; index++) {
-                    const childdom = bodydom.children[index]
-                    if (childdom == bodydom.querySelector('.more') || childdom.querySelector('.more')) break
-                    desc.content += childdom.outerHTML
-                }
-                post.content = desc.content
-            }
-        }
-        const l = Math.min(postlistdoms.length, descsdoms.length)
-        for (let index = 0; index < l; index++) {
-            const adom = postlistdoms[index].querySelector('a')
-            // def
-            const post = {}
-            post.async = {}
-            post.title = adom.innerText.trim()
-            post.url = adom.href.trim()
-            post.async.contentPromise = Get(post.url)
-            post.async.content = false
-            // async
-            const bdoms = descsdoms[index].querySelectorAll('a')
-            const postid = new URLSearchParams(new URL(bdoms[bdoms.length - 1].href).search).get('postid')
-            post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${postid}`)
-            post.async.tags = false
-            main.posts.push(post)
-            Promise.all([post.async.tagsPromise, post.async.contentPromise])
-                .then(callback(vm.main.posts[index]))
-        }
-        console.log(main)
-        return main
-    }
-</script><script>/**
- * @see markdown_highlight_swap
- * @memberof codehighlight
- */
-function reset() {
-    [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
-}
-reset()
-
-/**
- * 控制代码高亮是否显示行号
- * @memberof codehighlight
- */
-function highlightNumber(dom) {
-    if (!enableCodeLineNumber) return
-    dom.querySelectorAll('pre code').forEach(codedom => {
-        codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
-    })
-}/**
- * 主题的亮色与暗色
- * @namespace themedata
- */
-
-/**
- * 切换并尝试存储用户新的状态
- * @memberof themedata
- */
-function darkSwitcher(dom) {
-    darkSwitcherWithStorage(dom)
-    if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
-    if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
-}
-
-/**
- * 存储用户更改的状态
- * @memberof themedata
- */
-function darkSwitcherWithStorage(dom) {
-    if (!window.localStorage) return
-    if (dom.checked) localStorage.setItem('data-theme', 'dark')
-    if (!dom.checked) localStorage.setItem('data-theme', 'light')
-}
-
-/**
- * 初始化, 如果上一次用户更改了状态
- * @memberof themedata
- */
-function initDataTheme() {
-    if (window.localStorage) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
-}
-initDataTheme()/**
- * 文章目录生成
- * @namespace toc
- */
-
-/**
- * tocbot 加载完成回调, 初始化 '.article' 中的三级标题 到 '#toc'.
- * @memberof toc
- * @param {Element} dom 触发回调的元素, 用于触发回调后初始化 toc 目录生成.
- */
-function tocbotOnload(dom) {
-    if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
-    tocbot.init({
-        tocSelector: '#toc',
-        contentSelector: '.article',
-        headingSelector: 'h1, h2, h3',
-        hasInnerContainers: true,
-    })
-}
-
-/**
- * tocbot 改变 css 样式, 弹出目录承载容器.
- * @memberof toc
- * @param {Element} dom 触发回调的元素, 用于弹出目录承载容器.
- */
-function tocSwitcher(dom) {
-    if (dom.checked) {
-        document.querySelector('#toc').style.transform = 'translate(0)'
-        document.querySelector('#toc').style.boxShadow = 'var(--card-box-shadow)'
-    }
-    if (!dom.checked) {
-        document.querySelector('#toc').style.transform = 'translate(calc(var(--spacing)*15))'
-        document.querySelector('#toc').style.boxShadow = ''
-    }
-}
-</script>
+    })(vm.main.page))
+    console.log(page)
+    return page
+}</script>
