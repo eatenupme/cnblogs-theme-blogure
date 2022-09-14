@@ -67,6 +67,11 @@ bash .merge
 
 开发前, 建议通过以下文章入门.
 
+### API
+
+- [Blogure-API](https://www.cnblogs.com/blogure/p/blogure-api.html)
+
+
 ### [主题美化开发系列](https://www.cnblogs.com/mossxzzom/tag/%E7%BE%8E%E5%8C%96/)
 
 - [博客园主题美化 基础知识](https://www.cnblogs.com/mossxzzom/p/16635596.html)
