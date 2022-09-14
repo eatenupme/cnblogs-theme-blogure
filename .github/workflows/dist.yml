@@ -1,0 +1,21 @@
+name: dist
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  check-dist:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: bash .merge
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
