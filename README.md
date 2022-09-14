@@ -14,7 +14,8 @@
 
 ## 🤿 在线体验
 
-[mossxzzom - 博客园](https://mossxzzom.cnblogs.com/)
+- [blogure - 示例](https://blogure.cnblogs.com/)
+- [mossxzzom - 博客园](https://mossxzzom.cnblogs.com/)
 
 ## ✨ 功能特性
 
