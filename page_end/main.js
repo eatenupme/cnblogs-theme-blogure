@@ -1,5 +1,5 @@
 /**
- * 主体content, 目前用于承载{@link MainPosts,Page} {@link MainPost}
+ * 主体content, 目前用于承载{MainPosts,Page} {MainPost}
  * @namespace main
  */
 
