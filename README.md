@@ -6,9 +6,9 @@
 
 1. 基本设置 -> 博客皮肤 -> SimpleMemory
 1. 代码高亮 -> prismjs[完全支持]
-1. 页面定制 CSS 代码 -> ☑️禁用模板默认CSS -> [source](https://raw.githubusercontent.com/xnuc/cnblogs-theme-blogure/master/custom.css)
-1. 页首 HTML 代码 -> [source](https://raw.githubusercontent.com/xnuc/cnblogs-theme-blogure/master/page_begin.html)
-1. 页脚 HTML 代码 -> [source](https://raw.githubusercontent.com/xnuc/cnblogs-theme-blogure/master/page_end.html)
+1. 页面定制 CSS 代码 -> ☑️禁用模板默认CSS -> [source](https://files.cnblogs.com/files/blogs/707675/custom@latest.css)
+1. 页首 HTML 代码 -> [source](https://files.cnblogs.com/files/blogs/707675/page_begin@latest.html.js)
+1. 页脚 HTML 代码 -> [source](https://files.cnblogs.com/files/blogs/707675/page_end@latest.html.js?)
 
 <span class="more"></span>
 
