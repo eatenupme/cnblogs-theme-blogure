@@ -46,12 +46,12 @@
 ![image](https://img2022.cnblogs.com/blog/2588074/202209/2588074-20220911144700810-1895335156.gif)
 
 
-## 🔨 项目依赖
+## 📦 项目依赖
 
 + [PetiteVue ~6kb](https://github.com/vuejs/petite-vue)
 + [PicoCSS ~30kb](https://picocss.com/)
 
-## 🎯 构建流程
+## 🔨 构建流程
 
 ### Linux
 
@@ -71,10 +71,6 @@ bash .merge
 
 - [博客园主题美化 基础知识](https://www.cnblogs.com/mossxzzom/p/16635596.html)
 - [博客园主题美化 进阶提升](https://www.cnblogs.com/mossxzzom/p/16653264.html)
-
-### API
-
-- [blogure-api](https://xnuc.github.io/cnblogs-theme-blogure/index.html)
 
 ## 📝 反馈
 
