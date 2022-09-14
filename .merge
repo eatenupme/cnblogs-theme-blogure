@@ -4,5 +4,5 @@ mkdir dist
 cat symbol/DONOTEDIT layout.html page_begin/*.html symbol/SCRIPT page_begin/*.js symbol/SCRIPTEND > dist/page_begin.html
 cat symbol/DONOTEDIT lib.html symbol/SCRIPT page_end/*.js symbol/SCRIPTEND > dist/page_end.html
 wget https://unpkg.com/@picocss/pico@1.5.5/css/pico.min.css -O dist/pico.min.css
-cat dist/pico.min.css custom.css >  dist/custom.css
+cat dist/pico.min.css layout.css >  dist/custom.css
 rm -f dist/pico.min.css
