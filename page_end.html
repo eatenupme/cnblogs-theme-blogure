@@ -168,7 +168,7 @@ function GetMain(originBody) {
  * @param {ajax.settings} settings
  */
 $(document).ajaxComplete((_e, _x, settings) => {
-    if (settings.url.indexOf('PostComment/Add.aspx') < 0) return
+    if (settings.url.indexOf('PostComment/Add.aspx') < 0 && settings.url.indexOf('PostComment/Update.aspx') < 0 && settings.url.indexOf('comment/DeleteComment.aspx') < 0) return
     window.vm.main.post.async.comments = false
     Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`).then((r) => {
         comments = []
@@ -178,11 +178,13 @@ $(document).ajaxComplete((_e, _x, settings) => {
         for (let index = 0; index < commentsdoms.length; index++) {
             const commentdom = commentsdoms[index]
             const comment = {}
+            comment.actions = commentdom.querySelector('.comment_actions').innerHTML
+            commentdom.querySelector('.comment_actions').innerHTML = ''
+            commentdom.querySelector('.feedbackManage').style.display = 'none'
             comment.layer = commentdom.querySelector('.layer').innerText.trim()
             comment.isSelf = commentdom.querySelector('.louzhu') ? true : false
-            const adoms = commentdom.querySelectorAll('.feedbackListSubtitle a')
-            const userdom = adoms[adoms.length - 1]
-            comment.user = { desc: userdom.innerText.trim(), url: userdom.href.trim() }
+            const userdom = commentdom.querySelector('.feedbackListSubtitle')
+            comment.user = { info: userdom.innerHTML.trim() }
             comment.content = commentdom.querySelectorAll('.feedbackCon div')[0].innerHTML.trim()
             const spandoms = commentdom.querySelectorAll('.feedbackCon span')
             const avatardom = spandoms[spandoms.length - 1]
@@ -278,11 +280,13 @@ function MainPost(detaildom) {
             for (let index = 0; index < commentsdoms.length; index++) {
                 const commentdom = commentsdoms[index]
                 const comment = {}
+                comment.actions = commentdom.querySelector('.comment_actions').innerHTML
+                commentdom.querySelector('.comment_actions').innerHTML = ''
+                commentdom.querySelector('.feedbackManage').style.display = 'none'
                 comment.layer = commentdom.querySelector('.layer').innerText.trim()
                 comment.isSelf = commentdom.querySelector('.louzhu') ? true : false
-                const adoms = commentdom.querySelectorAll('.feedbackListSubtitle a')
-                const userdom = adoms[adoms.length - 1]
-                comment.user = { desc: userdom.innerText.trim(), url: userdom.href.trim() }
+                const userdom = commentdom.querySelector('.feedbackListSubtitle')
+                comment.user = { info: userdom.innerHTML.trim() }
                 comment.content = commentdom.querySelectorAll('.feedbackCon div')[0].innerHTML.trim()
                 const spandoms = commentdom.querySelectorAll('.feedbackCon span')
                 const avatardom = spandoms[spandoms.length - 1]
@@ -298,8 +302,13 @@ function MainPost(detaildom) {
         return (r) => {
             const tempdom = document.createElement('div')
             tempdom.innerHTML = r.responseText.trim()
+            tempdom.querySelector('.commentbox_main').style.width = '100%'
+            tempdom.querySelector('#tbCommentBody').style.maxWidth = '100%'
+            tempdom.querySelector('#tbCommentBody').style.minWidth = '100%'
+            tempdom.querySelector('#commentform_title').style.padding = '0'
+            tempdom.querySelector('#commentform_title').style.backgroundImage = 'none'
+
             main.post.commentForm = ''
-            const jsdoms = []
             for (let index = 0; index < tempdom.children.length; index++) {
                 const formdom = tempdom.children[index]
                 if (formdom.tagName !== 'SCRIPT') main.post.commentForm += formdom.outerHTML

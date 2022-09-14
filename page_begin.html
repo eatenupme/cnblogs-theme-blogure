@@ -113,13 +113,17 @@
         </div>
     </template>
     <template v-if="(main.layout === 'post') && (main.post.logined ?? false)">
-        <ul :aria-busy="!(post.async.comments ?? true)">
-            <li v-for="(comment, index) in post.comments ?? []">
+        <ul :aria-busy="!(post.async.comments ?? true)" style="padding:0;">
+            <li v-for="(comment, index) in post.comments ?? []" style="list-style:none;display:flex;width:100%;">
                 <div>
-                    <img :src="comment.user.avatar" :alt="comment.user.avatar">
-                    <a :href="comment.user.url">{{comment.user.desc}}</a>
+                    <img :src="comment.user.avatar" :alt="comment.user.avatar"
+                        style="border-radius:50%;margin-right:var(--spacing);">
                 </div>
-                <div v-html="comment.content ?? ''"></div>
+                <div style="flex-grow:1;">
+                    <div v-html="comment.user.info ?? ''"></div>
+                    <div v-html="comment.content ?? ''"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;" v-html="comment.actions ?? ''"></div>
             </li>
         </ul>
     </template>
