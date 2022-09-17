@@ -38,7 +38,8 @@
                     <div v-html="comment.user.info ?? ''"></div>
                     <div v-html="comment.content ?? ''"></div>
                 </div>
-                <div style="display:flex;flex-direction:column;" v-html="comment.actions ?? ''"></div>
+                <div style="display:flex;flex-direction:column;white-space:nowrap;" v-html="comment.actions ?? ''">
+                </div>
             </li>
         </ul>
     </template>
