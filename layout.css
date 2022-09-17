@@ -1,4 +1,8 @@
 /* custom */
+kbd {
+    --font-family: "sans-serif";
+}
+
 body {
     visibility: hidden;
 }
@@ -40,4 +44,8 @@ pre>code {
 
 .is-active-li a {
     color: var(--code-kbd-color);
+}
+
+p code {
+    padding: calc(var(--spacing) / 4);
 }
