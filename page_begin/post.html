@@ -12,6 +12,11 @@
     <template v-if="(post.async.content ?? true)">
         <div v-html="post.content" v-effect="markdown_highlight('.article');"></div>
     </template>
+    <!-- read more -->
+    <template v-if="(main.layout === 'posts')">
+        <a :href="post.url"
+            style="display:inline-block;margin-bottom:var(--spacing);text-decoration:underline;color:var(--code-kbd-background-color);">阅读更多</a>
+    </template>
     <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
         <li v-for="(tag, index) in post.tags ?? []"
             style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
