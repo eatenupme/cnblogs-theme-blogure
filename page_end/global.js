@@ -18,7 +18,12 @@ reset()
  * @memberof global
  */
 function initDataTheme() {
-    if (window.localStorage) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
+    if (window.localStorage && localStorage.getItem('data-theme')) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+        if (event.matches) document.querySelector('#dark-switch').checked = true
+        else document.querySelector('#dark-switch').checked = false
+        darkSwitcher(document.querySelector('#dark-switch'))
+    })
 }
 initDataTheme()
 
