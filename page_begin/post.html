@@ -17,7 +17,7 @@
         <a :href="post.url"
             style="display:inline-block;margin-bottom:var(--spacing);text-decoration:underline;color:var(--code-kbd-background-color);">阅读更多</a>
     </template>
-    <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;">
+    <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;margin-bottom:0;">
         <li v-for="(tag, index) in post.tags ?? []"
             style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
             <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
