@@ -10,6 +10,7 @@
         <div aria-busy="true"></div>
     </template>
     <template v-if="(post.async.content ?? true)">
+        <div v-html="post.desc ?? ''" style="opacity:50%;text-align:center;"></div>
         <div v-html="post.content" v-effect="markdown_highlight('.article');"></div>
     </template>
     <!-- read more -->

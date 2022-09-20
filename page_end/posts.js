@@ -50,6 +50,9 @@ function MainPosts(postlistdoms, descsdoms, pagedoms) {
                 desc.content += childdom.outerHTML
             }
             post.content = desc.content
+            // desc
+            const descdom = detaildom.querySelector('.postDesc')
+            post.desc = descdom.innerHTML.trim()
         }
     }
     const l = Math.min(postlistdoms.length, descsdoms.length)
