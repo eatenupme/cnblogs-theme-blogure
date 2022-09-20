@@ -87,6 +87,9 @@ function MainPost(detaildom) {
     const bodydom = detaildom.querySelector('#cnblogs_post_body')
     highlightNumber(bodydom)
     main.post.content = bodydom.innerHTML.trim()
+    // desc
+    const descdom = detaildom.querySelector('.postDesc')
+    main.post.desc = descdom.innerHTML.trim()
     // tags(async)
     main.post.async.tags = false
     main.post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${cb_entryId}`)
