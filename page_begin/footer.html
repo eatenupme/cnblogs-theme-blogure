@@ -3,7 +3,7 @@
     <small>Built with <a href="https://www.cnblogs.com/">cnblogs</a> •
         <a href="https://github.com/xnuc/cnblogs-theme-blogure">source</a></small>
     <label for="switch">
-        <input type="checkbox" style="position:fixed;bottom:var(--spacing);left:var(--spacing);" id="dark-switch"
+        <input type="checkbox" style="position:fixed;bottom:var(--spacing);left:var(--spacing);" id="dark-switch" :class="vm.theme"
             role="switch" @click="darkSwitcher($el)" :checked="localStorage.getItem('data-theme') === 'dark' ?? false">
     </label>
     <template v-if="vm.main.layout === 'post'">

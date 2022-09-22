@@ -50,6 +50,7 @@ function petitevueOnload(dom) {
     document.body.appendChild(tokendom)
     // vm mount
     const vm = (window.vm = PetiteVue.reactive({}))
+    vm.theme = localStorage.getItem('data-theme') ?? 'light'
     vm.async = {}
     vm.header = GetHeader(originBody)
     vm.main = GetMain(originBody)
@@ -88,6 +89,7 @@ function darkSwitcher(dom) {
     darkSwitcherWithStorage(dom)
     if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
     if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
+    window.vm.theme = document.querySelector('html').getAttribute('data-theme')
 }
 
 /**
