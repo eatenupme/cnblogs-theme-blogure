@@ -89,7 +89,11 @@ function MainPost(detaildom) {
     main.post.content = bodydom.innerHTML.trim()
     // desc
     const descdom = detaildom.querySelector('.postDesc')
-    main.post.desc = descdom.innerHTML.trim()
+    main.post.desc = {}
+    main.post.desc.metadata = descdom.innerHTML.trim()
+    main.post.desc.date = descdom.querySelector('#post-date').innerText
+    main.post.desc.viewCount = descdom.querySelector('#post_view_count').innerText
+    main.post.desc.commentCount = descdom.querySelector('#post_comment_count').innerText
     // tags(async)
     main.post.async.tags = false
     main.post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${cb_entryId}`)
