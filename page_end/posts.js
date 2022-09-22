@@ -52,7 +52,11 @@ function MainPosts(postlistdoms, descsdoms, pagedoms) {
             post.content = desc.content
             // desc
             const descdom = detaildom.querySelector('.postDesc')
-            post.desc = descdom.innerHTML.trim()
+            post.desc = {}
+            post.desc.metadata = descdom.innerHTML.trim()
+            post.desc.date = descdom.querySelector('#post-date').innerText
+            post.desc.viewCount = descdom.querySelector('#post_view_count').innerText
+            post.desc.commentCount = descdom.querySelector('#post_comment_count').innerText
         }
     }
     const l = Math.min(postlistdoms.length, descsdoms.length)
