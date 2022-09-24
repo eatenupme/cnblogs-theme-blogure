@@ -57,3 +57,7 @@ p code {
 .dark:before {
     content: "🌚";
 }
+
+#navList li a {
+    display: block !important;
+}
