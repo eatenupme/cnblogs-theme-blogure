@@ -9,6 +9,7 @@
  * @param {Element} postlistdoms
  * @param {Element} descsdoms
  * @param {Element} pagedoms
+ * @returns {Array.post} 随笔对象列表
  */
 function MainPosts(postlistdoms, descsdoms, pagedoms) {
     // def

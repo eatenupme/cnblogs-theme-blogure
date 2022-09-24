@@ -4,9 +4,16 @@
  */
 
 /**
+ * @typedef {Object} main
+ * @property {String} layout - 布局[列表页,文章页,标签页]等
+ * @property {Object} data - layout 所需要的信息,对main透明
+ */
+
+/**
  * main数据加载
  * @memberof main
  * @param {Element} originBody
+ * @returns {main} 博客标题导航
  */
 function GetMain(originBody) {
     if (originBody.querySelector('#post_detail')) {
