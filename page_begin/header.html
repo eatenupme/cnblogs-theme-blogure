@@ -7,9 +7,7 @@
         </hgroup>
         <details role="list" style="margin-bottom:0;margin-left:var(--nav-element-spacing-horizontal);">
             <summary aria-haspopup="listbox" role="link">更多</summary>
-            <ul role="listbox">
-                <li v-for="(nav, index) in header.navs ?? []"><a :href="nav.url">{{ nav.desc }}</a></li>
-            </ul>
+            <ul role="listbox" id="navList" v-html="vm.header.navlist"></ul>
         </details>
     </nav>
 </template>

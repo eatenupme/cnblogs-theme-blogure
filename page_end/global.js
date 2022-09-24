@@ -50,9 +50,10 @@ function petitevueOnload(dom) {
     document.body.appendChild(tokendom)
     // vm mount
     const vm = (window.vm = PetiteVue.reactive({}))
+    vm.metadata = originBody
     vm.theme = localStorage.getItem('data-theme') ?? 'light'
     vm.async = {}
-    vm.header = GetHeader(originBody)
+    vm.GetHeader = GetHeader()
     vm.main = GetMain(originBody)
     PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
 }
