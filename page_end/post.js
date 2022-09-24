@@ -69,9 +69,22 @@ function tocSwitcher(dom) {
 }
 
 /**
+ * @typedef {Object} post
+ * @property {Object} async - 异步回调完成标志
+ * @property {String} url - 随笔url
+ * @property {String} title - 随笔title
+ * @property {String} content - 随笔内容,需要回调标志
+ * @property {Object} desc - 随笔描述,发表日期,观看人数
+ * @property {Object} tags - 随笔标签,需要回调标志
+ * @property {Object} comments - 随笔评论,需要回调标志
+ * @property {Object} commentForm - 评论容器,需要回调标志
+ */
+
+/**
  * post数据加载
  * @memberof post
  * @param {Element} detaildom
+ * @returns {post} 随笔对象
  */
 function MainPost(detaildom) {
     // def
