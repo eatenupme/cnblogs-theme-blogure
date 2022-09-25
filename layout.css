@@ -61,3 +61,12 @@ p code {
 #navList li a {
     display: block !important;
 }
+
+.is-collapsible {
+    overflow: hidden;
+    transition: var(--transition)
+}
+
+.is-collapsed {
+    max-height: 0
+}
