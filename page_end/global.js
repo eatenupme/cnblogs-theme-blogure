@@ -53,8 +53,10 @@ function petitevueOnload(dom) {
     vm.metadata = originBody
     vm.theme = localStorage.getItem('data-theme') ?? 'light'
     vm.async = {}
-    vm.GetHeader = GetHeader()
-    vm.main = GetMain(originBody)
+    vm.GetHeader = GetHeader
+    vm.GetHeader()
+    vm.GetMain = GetMain
+    vm.GetMain()
     PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
 }
 
