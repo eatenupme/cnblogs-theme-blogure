@@ -12,16 +12,16 @@
 /**
  * main数据加载
  * @memberof main
- * @param {Element} originBody
  * @returns {main} 博客标题导航
  */
-function GetMain(originBody) {
-    if (originBody.querySelector('#post_detail')) {
-        return MainPost(originBody.querySelector('#post_detail'))
+function GetMain() {
+    if (vm.metadata.querySelector('#post_detail')) { // 单篇文章
+        vm.GetMainPost = GetMainPost
+        return vm.GetMainPost()
     }
-    if (originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) {
-        return MainPosts(originBody.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle'),
-            originBody.querySelectorAll('.postDesc, .postDesc2, .entrylistItemPostDesc'), originBody)
+    else if (vm.metadata.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) { // 文章列表
+        return MainPosts(vm.metadata.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle'),
+            vm.metadata.querySelectorAll('.postDesc, .postDesc2, .entrylistItemPostDesc'), )
     }
     return { layout: '' }
 }
