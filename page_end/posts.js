@@ -11,8 +11,12 @@
  * @param {Element} pagedoms
  * @returns {Array.post} 随笔对象列表
  */
-function MainPosts(postlistdoms, descsdoms, pagedoms) {
+function GetMainPosts() {
     // def
+    postlistdoms, descsdoms, pagedoms =
+        vm.metadata.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle'),
+        vm.metadata.querySelectorAll('.postDesc, .postDesc2, .entrylistItemPostDesc'),
+        vm.metadata
     const main = (vm.main = {})
     main.layout = 'posts'
     main.page = MainPage(pagedoms)

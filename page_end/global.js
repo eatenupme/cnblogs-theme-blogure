@@ -50,7 +50,7 @@ function petitevueOnload(dom) {
     document.body.appendChild(tokendom)
     // vm mount
     const vm = (window.vm = PetiteVue.reactive({}))
-    vm.metadata = originBody
+    vm.metadata = originBody // metadata 规则：至少存在一次http被认为需要metadata.
     vm.theme = localStorage.getItem('data-theme') ?? 'light'
     vm.async = {}
     vm.GetHeader = GetHeader
