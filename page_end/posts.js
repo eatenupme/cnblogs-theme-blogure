@@ -25,43 +25,8 @@ function GetMainPosts() {
     const callback = (post) => {
         return (r) => {
             const tempdom = document.createElement('html')
-            tempdom.innerHTML = r[0].responseText
-            const tagsdoms = tempdom.querySelectorAll('a')
-            const tags = []
-            for (let index = 0; index < tagsdoms.length; index++) {
-                const tagdom = tagsdoms[index]
-                const tag = {}
-                tag.desc = tagdom.innerText.trim()
-                tag.url = tagdom.href.trim()
-                tags.push(tag)
-            }
-            post.tags = tags
-            post.async.tags = true
-
-            tempdom.innerHTML = r[1].responseText
-            const detaildom = tempdom.querySelector('#post_detail')
-            const titledom = detaildom.querySelector('.postTitle a')
-            post.url = titledom.href.trim()
-            post.title = titledom.innerText.trim()
-            const bodydom = detaildom.querySelector('#cnblogs_post_body')
-            highlightNumber(bodydom)
-            post.content = bodydom.innerHTML.trim()
-            post.async.content = true
-            if (!bodydom.querySelector('.more')) return
-            const desc = { content: '' }
-            for (let index = 0; index < bodydom.children.length; index++) {
-                const childdom = bodydom.children[index]
-                if (childdom == bodydom.querySelector('.more') || childdom.querySelector('.more')) break
-                desc.content += childdom.outerHTML
-            }
-            post.content = desc.content
-            // desc
-            const descdom = detaildom.querySelector('.postDesc')
-            post.desc = {}
-            post.desc.metadata = descdom.innerHTML.trim()
-            post.desc.date = descdom.querySelector('#post-date').innerText
-            post.desc.viewCount = descdom.querySelector('#post_view_count').innerText
-            post.desc.commentCount = descdom.querySelector('#post_comment_count').innerText
+            tempdom.innerHTML = r.responseText
+            post = GetMainPost(tempdom)
         }
     }
     const l = Math.min(postlistdoms.length, descsdoms.length)
@@ -75,13 +40,8 @@ function GetMainPosts() {
         post.async.contentPromise = Get(post.url)
         post.async.content = false
         // async
-        const bdoms = descsdoms[index].querySelectorAll('a')
-        const postid = new URLSearchParams(new URL(bdoms[bdoms.length - 1].href).search).get('postid')
-        post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${postid}`)
-        post.async.tags = false
         main.posts.push(post)
-        Promise.all([post.async.tagsPromise, post.async.contentPromise])
-            .then(callback(vm.main.posts[index]))
+        contentPromise.then(callback(vm.main.posts[index]))
     }
     console.log(main)
     return main

@@ -17,7 +17,7 @@
 function GetMain() {
     if (vm.metadata.querySelector('#post_detail')) { // 单篇文章
         vm.GetMainPost = GetMainPost
-        return vm.GetMainPost()
+        return vm.GetMainPost(vm.metadata)
     } else if (vm.metadata.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) { // 文章列表
         vm.GetMainPosts = GetMainPosts
         return vm.GetMainPosts()

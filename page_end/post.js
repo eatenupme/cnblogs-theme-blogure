@@ -86,9 +86,9 @@ function tocSwitcher(dom) {
  * @param {Element} detaildom
  * @returns {post} 随笔对象
  */
-function GetMainPost() {
+function GetMainPost(metadata) {
     // def
-    const detaildom = vm.metadata.querySelector('#post_detail')
+    const detaildom = metadata.querySelector('#post_detail')
     const main = (vm.main = {})
     main.layout = 'post'
     main.post = {}
