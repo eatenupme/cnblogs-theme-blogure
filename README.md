@@ -60,6 +60,10 @@
 bash .merge
 ```
 
+### Windows
+
+自行 `wsl`, 按照 `Linux` 操作.
+
 ## 🎹 参与共建 | 二次开发
 
 参与共建, 可以在 [github-issues](https://github.com/xnuc/cnblogs-theme-blogure/issues) 中找到 `help wanted` 标签, 发起 [PR](https://github.com/xnuc/cnblogs-theme-blogure/compare).
