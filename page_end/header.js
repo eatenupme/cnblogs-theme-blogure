@@ -26,8 +26,14 @@ function GetHeader() {
     const h2dom = headerdom.querySelector('h2')
     header.subtitle = h2dom.innerText.trim()
     // navlist
-    const navlistdom = headerdom.querySelector('#navList')
-    header.navlist = navlistdom.innerHTML.trim()
+    const navlist = { dom: '' }
+    const navlistdoms = headerdom.querySelectorAll('#navList li')
+    navlistdoms.forEach(nav => { // 原则上不解析, 这里因为博客园对关闭的导航栏保留标签导致需要去解析. 这里解析仅对空值过滤.
+        if (nav.innerText.trim()) {
+            navlist.dom += nav.outerHTML
+        }
+    })
+    header.navlist = navlist.dom.trim()
     console.log(header)
     return header
 }
