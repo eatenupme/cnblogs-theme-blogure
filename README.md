@@ -15,7 +15,6 @@
 ## 🤿 在线体验
 
 - [blogure - 示例](https://blogure.cnblogs.com/)
-- [mossxzzom - 博客园](https://mossxzzom.cnblogs.com/)
 
 ## ✨ 功能特性
 
@@ -76,12 +75,6 @@ bash .merge
 
 - [Blogure-API](https://www.cnblogs.com/blogure/p/blogure-api.html)
 
-
-### [主题美化开发系列](https://www.cnblogs.com/mossxzzom/tag/%E7%BE%8E%E5%8C%96/)
-
-- [博客园主题美化 基础知识](https://www.cnblogs.com/mossxzzom/p/16635596.html)
-- [博客园主题美化 进阶提升](https://www.cnblogs.com/mossxzzom/p/16653264.html)
-
 ## 📝 反馈
 
-通过 [github-issues](https://github.com/xnuc/cnblogs-theme-blogure/issues) 或者 [主题说明](https://www.cnblogs.com/mossxzzom/p/cnblogs-theme-blogure.html) 页面评论区.
+通过 [github-issues](https://github.com/xnuc/cnblogs-theme-blogure/issues) 或者 [主题说明](https://www.cnblogs.com/blogure/p/cnblogs-theme-blogure.html) 页面评论区.
