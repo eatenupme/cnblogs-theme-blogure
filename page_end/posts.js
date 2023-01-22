@@ -76,7 +76,7 @@ function GetMainPosts() {
         post.async.content = false
         // async
         const bdoms = descsdoms[index].querySelectorAll('a')
-        const postid = new URLSearchParams(new URL(bdoms[bdoms.length - 1].href).search).get('postid')
+        const postid = new URL(bdoms[bdoms.length - 1].href).searchParams.get('postid')
         post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${postid}`)
         post.async.tags = false
         main.posts.push(post)
