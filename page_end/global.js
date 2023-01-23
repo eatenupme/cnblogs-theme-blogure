@@ -53,8 +53,7 @@ function petitevueOnload(dom) {
     vm.metadata = originBody // metadata 规则：至少存在一次http被认为需要metadata.
     vm.theme = localStorage.getItem('data-theme') ?? 'light'
     vm.async = {}
-    vm.GetHeader = GetHeader
-    vm.GetHeader()
+    LoadHeader()
     vm.GetMain = GetMain
     vm.GetMain()
     PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()

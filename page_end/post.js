@@ -88,46 +88,12 @@ function tocSwitcher(dom) {
  */
 function GetMainPost() {
     // def
-    const detaildom = vm.metadata.querySelector('#post_detail')
     const main = (vm.main = {})
     main.layout = 'post'
     main.post = {}
     main.post.async = {}
-    // title url
-    const titledom = detaildom.querySelector('.postTitle a')
-    main.post.url = titledom.href.trim()
-    main.post.title = titledom.innerText.trim()
-    // content
-    const bodydom = detaildom.querySelector('#cnblogs_post_body')
-    highlightNumber(bodydom)
-    main.post.content = bodydom.innerHTML.trim()
-    // desc
-    const descdom = detaildom.querySelector('.postDesc')
-    main.post.desc = {}
-    main.post.desc.metadata = descdom.innerHTML.trim()
-    main.post.desc.date = descdom.querySelector('#post-date').innerText
-    main.post.desc.viewCount = descdom.querySelector('#post_view_count').innerText
-    main.post.desc.commentCount = descdom.querySelector('#post_comment_count').innerText
-    // tags(async)
-    main.post.async.tags = false
-    main.post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${cb_entryId}`)
-    main.post.async.tagsPromise.then(((main) => {
-        return (r) => {
-            const tempdom = document.createElement('div')
-            tempdom.innerHTML = r.responseText.trim()
-            const tagsdoms = tempdom.querySelectorAll('a')
-            const tags = []
-            for (let index = 0; index < tagsdoms.length; index++) {
-                const tagdom = tagsdoms[index]
-                const tag = {}
-                tag.desc = tagdom.innerText.trim()
-                tag.url = tagdom.href.trim()
-                tags.push(tag)
-            }
-            main.post.tags = tags
-            main.post.async.tags = true
-        }
-    })(vm.main))
+    // fill
+    FillPost(main.post)
     // comments(async)
     main.post.logined = isLogined
     if (!main.post.logined) return main
@@ -180,4 +146,46 @@ function GetMainPost() {
     })(vm.main))
     console.log(main)
     return main
+}
+
+function FillPost(post) {
+    const detaildom = vm.metadata.querySelector('#post_detail')
+    // title url
+    const titledom = detaildom.querySelector('.postTitle a')
+    post.url = titledom.href.trim()
+    post.title = titledom.innerText.trim()
+    // content
+    const bodydom = detaildom.querySelector('#cnblogs_post_body')
+    highlightNumber(bodydom)
+    post.content = bodydom.innerHTML.trim()
+    // desc
+    const descdom = detaildom.querySelector('.postDesc')
+    post.desc = {}
+    post.desc.metadata = descdom.innerHTML.trim()
+    post.desc.date = descdom.querySelector('#post-date').innerText
+    post.desc.viewCount = descdom.querySelector('#post_view_count').innerText
+    post.desc.commentCount = descdom.querySelector('#post_comment_count').innerText
+    // tags(async)
+    post.async.tags = false
+    post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${cb_entryId}`)
+    post.async.tagsPromise.then(((post) => {
+        return (r) => {
+            const tempdom = document.createElement('div')
+            tempdom.innerHTML = r.responseText.trim()
+            const tagsdoms = tempdom.querySelectorAll('a')
+            const tags = []
+            for (let index = 0; index < tagsdoms.length; index++) {
+                const tagdom = tagsdoms[index]
+                const tag = {}
+                tag.desc = tagdom.innerText.trim()
+                tag.url = tagdom.href.trim()
+                tags.push(tag)
+            }
+            post.title = '123'
+            post.tags = tags
+            console.debug(post.async.tags, post.tags)
+            post.async.tags = true
+            console.debug('tags loaded from tagxhr', post.async.tagsPromise, post.tags)
+        }
+    })(post))
 }
