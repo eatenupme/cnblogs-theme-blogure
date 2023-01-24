@@ -1,42 +1,39 @@
 <!-- post -->
 <template id="blogure-post">
+    <!-- 标题 -->
     <h2
         style="position:relative;top:calc(var(--block-spacing-horizontal)*-3);height:var(--block-spacing-horizontal);margin-bottom:0;text-align:center;">
         <kbd style="box-shadow:var(--card-box-shadow);">
-            <a :href="post.url" style="text-align:center;color:var(--code-kbd-color);">{{ post.title }}</a>
+            <a :href="vm.post.url" style="text-align:center;color:var(--code-kbd-color);">{{ vm.post.title }}</a>
         </kbd>
     </h2>
-    <template v-if="!(post.async.content ?? true)">
-        <div aria-busy="true"></div>
-    </template>
-    <template v-if="(post.async.content ?? true)">
-        <div style="opacity:50%;text-align:center;">📅 {{post.desc.date}} 👁️ {{post.desc.viewCount}} 💬
-            {{post.desc.commentCount}}</div>
-        <div v-html="post.content" v-effect="markdown_highlight('.article');"></div>
-    </template>
-    <!-- read more -->
-    <template v-if="(main.layout === 'posts')">
-        <a :href="post.url"
-            style="display:inline-block;margin-bottom:var(--spacing);text-decoration:underline;color:var(--code-kbd-background-color);">阅读更多</a>
-    </template>
-    <ul :aria-busy="!(post.async.tags ?? true)" style="display:flex;padding-left:0;margin-bottom:0;">
-        <li v-for="(tag, index) in post.tags ?? []"
+    <!-- 发布时间 观看人数 评论数 -->
+    <div style="opacity:50%;text-align:center;">
+        📅 {{vm.post.desc.date}}
+        👁️ {{vm.post.desc.viewCount}}
+        💬 {{vm.post.desc.commentCount}}
+    </div>
+    <div v-html="vm.post.content" v-effect="markdown_highlight('.article');"></div>
+    <!-- 标签 -->
+    <ul :aria-busy="!(vm.post.async.tags ?? true)" style="display:flex;padding-left:0;margin-bottom:0;">
+        <li v-for="(tag, index) in vm.post.tags ?? []"
             style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
             <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
         </li>
     </ul>
-    <template v-if="!((post.async.commentForm ?? true) && (vm.async.mention ?? true))">
+    <!-- 评论框 -->
+    <template v-if="!((vm.post.async.commentForm ?? true) && (vm.async.mention ?? true))">
         <div aria-busy="true"></div>
     </template>
-    <template
-        v-if="(post.async.commentForm ?? true) && (vm.async.mention ?? true) && (main.layout === 'post') && (main.post.logined ?? false)">
-        <div v-html="main.post.commentForm ?? ''"
+    <template v-if="(vm.post.async.commentForm ?? true) && (vm.async.mention ?? true) && (vm.logined ?? false)">
+        <div v-html="vm.post.commentForm ?? ''"
             v-effect="window.commentEditor=initCommentEditor('tbCommentBody');commentManager.renderComments(0);">
         </div>
     </template>
-    <template v-if="(main.layout === 'post') && (main.post.logined ?? false)">
-        <ul :aria-busy="!(post.async.comments ?? true)" style="padding:0;">
-            <li v-for="(comment, index) in post.comments ?? []" style="list-style:none;display:flex;width:100%;">
+    <!-- 评论 -->
+    <template v-if="(vm.logined ?? false)">
+        <ul :aria-busy="!(vm.post.async.comments ?? true)" style="padding:0;">
+            <li v-for="(comment, index) in vm.post.comments ?? []" style="list-style:none;display:flex;width:100%;">
                 <div>
                     <img :src="comment.user.avatar" :alt="comment.user.avatar"
                         style="border-radius:50%;margin-right:var(--spacing);">
@@ -50,16 +47,15 @@
             </li>
         </ul>
     </template>
-    <template v-if="(main.layout === 'post') && !(main.post.logined ?? false)">
+    <template v-if="!(vm.logined ?? false)">
         <div>登录后才能查看或发表评论, 立即 <a rel="nofollow" href="javascript:void(0);" class="underline"
                 onclick="return account.login('!comments');">登录</a></div>
     </template>
 </template>
 <script>
-    function Post(post) {
+    function Post() {
         return {
             $template: '#blogure-post',
-            post,
         }
     }
 </script>

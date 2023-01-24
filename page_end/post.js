@@ -80,27 +80,19 @@ function tocSwitcher(dom) {
  * @property {Object} commentForm - 评论容器,需要回调标志
  */
 
-/**
- * post数据加载
- * @memberof post
- * @param {Element} detaildom
- * @returns {post} 随笔对象
- */
-function GetMainPost() {
+function LoadPost() {
     // def
-    const main = (vm.main = {})
-    main.layout = 'post'
-    main.post = {}
-    main.post.async = {}
+    const vm = window.vm
+    vm.layout = 'post'
+    vm.post = { async: {} }
     // fill
-    FillPost(main.post)
+    FillPost(vm.post, vm.metadata)
+    if (!vm.logined) return
     // comments(async)
-    main.post.logined = isLogined
-    if (!main.post.logined) return main
-    main.post.async.comments = false
-    main.post.async.commentsPromise = Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`)
-    main.post.comments = []
-    main.post.async.commentsPromise.then(((main) => {
+    vm.post.async.comments = false
+    vm.post.comments = []
+    vm.post.async.commentsPromise = Get(getAjaxBaseUrl() + `GetComments.aspx?postId=${cb_entryId}&pageIndex=0`)
+    vm.post.async.commentsPromise.then(((post) => {
         return (r) => {
             const tempdom = document.createElement('div')
             tempdom.innerHTML = r.responseText.trim()
@@ -119,14 +111,15 @@ function GetMainPost() {
                 const spandoms = commentdom.querySelectorAll('.feedbackCon span')
                 const avatardom = spandoms[spandoms.length - 1]
                 comment.user.avatar = avatardom.innerText.trim()
-                main.post.comments.push(comment)
+                post.comments.push(comment)
             }
-            main.post.async.comments = true
+            post.async.comments = true
         }
-    })(vm.main))
-    main.post.async.commentForm = false
-    main.post.async.commentsForm = Get(getAjaxBaseUrl() + `CommentForm.aspx?postId=${cb_entryId}`)
-    main.post.async.commentsForm.then(((main) => {
+    })(vm.post))
+
+    vm.post.async.commentForm = false
+    vm.post.async.commentsForm = Get(getAjaxBaseUrl() + `CommentForm.aspx?postId=${cb_entryId}`)
+    vm.post.async.commentsForm.then(((post) => {
         return (r) => {
             const tempdom = document.createElement('div')
             tempdom.innerHTML = r.responseText.trim()
@@ -136,20 +129,19 @@ function GetMainPost() {
             tempdom.querySelector('#commentform_title').style.padding = '0'
             tempdom.querySelector('#commentform_title').style.backgroundImage = 'none'
 
-            main.post.commentForm = ''
+            post.commentForm = ''
             for (let index = 0; index < tempdom.children.length; index++) {
                 const formdom = tempdom.children[index]
-                if (formdom.tagName !== 'SCRIPT') main.post.commentForm += formdom.outerHTML
+                if (formdom.tagName !== 'SCRIPT') post.commentForm += formdom.outerHTML
             }
-            main.post.async.commentForm = true
+            post.async.commentForm = true
         }
-    })(vm.main))
-    console.log(main)
-    return main
+    })(vm.post))
 }
 
-function FillPost(post) {
-    const detaildom = vm.metadata.querySelector('#post_detail')
+// FillPost 传入post引用和dom 完成数据加载
+function FillPost(post, dom) {
+    const detaildom = dom.querySelector('#post_detail')
     // title url
     const titledom = detaildom.querySelector('.postTitle a')
     post.url = titledom.href.trim()
@@ -158,6 +150,14 @@ function FillPost(post) {
     const bodydom = detaildom.querySelector('#cnblogs_post_body')
     highlightNumber(bodydom)
     post.content = bodydom.innerHTML.trim()
+    // preview
+    if (!bodydom.querySelector('.more')) post.preview = post.content
+    else post.preview = ''
+    for (let index = 0; index < bodydom.children.length && bodydom.querySelector('.more'); index++) {
+        const childdom = bodydom.children[index]
+        if (childdom == bodydom.querySelector('.more') || childdom.querySelector('.more')) break
+        post.preview += childdom.outerHTML
+    }
     // desc
     const descdom = detaildom.querySelector('.postDesc')
     post.desc = {}
@@ -165,9 +165,15 @@ function FillPost(post) {
     post.desc.date = descdom.querySelector('#post-date').innerText
     post.desc.viewCount = descdom.querySelector('#post_view_count').innerText
     post.desc.commentCount = descdom.querySelector('#post_comment_count').innerText
+    // postid
+    const bdoms = descdom.querySelectorAll('a')
+    bdoms.forEach(e => {
+        if (e.innerText === '编辑') post.postid = new URL(e.href).searchParams.get('postid')
+    })
     // tags(async)
+    if (!post.postid) { post.async.tags = true; return }
     post.async.tags = false
-    post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${cb_entryId}`)
+    post.async.tagsPromise = Get(getAjaxBaseUrl() + `CategoriesTags.aspx?blogId=${currentBlogId}&postId=${post.postid}`)
     post.async.tagsPromise.then(((post) => {
         return (r) => {
             const tempdom = document.createElement('div')
@@ -181,11 +187,10 @@ function FillPost(post) {
                 tag.url = tagdom.href.trim()
                 tags.push(tag)
             }
-            post.title = '123'
             post.tags = tags
-            console.debug(post.async.tags, post.tags)
             post.async.tags = true
             console.debug('tags loaded from tagxhr', post.async.tagsPromise, post.tags)
         }
     })(post))
+    console.debug('post loaded from dom', dom, post)
 }

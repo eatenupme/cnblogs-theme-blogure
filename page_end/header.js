@@ -17,6 +17,7 @@
  * @returns {header} 博客标题导航
  */
 function LoadHeader() {
+    const vm = window.vm
     const header = (vm.header = {})
     const headerdom = vm.metadata.querySelector('#header')
     // title subtitle

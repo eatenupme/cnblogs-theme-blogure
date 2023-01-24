@@ -1,18 +1,17 @@
 <!-- main -->
 <template id="blogure-main">
-    <template v-if="main.layout === 'post'">
-        <article v-scope="Post(main.post)" class="article"></article>
+    <template v-if="vm.layout === 'post'">
+        <article class="article" v-scope="Post()"></article>
     </template>
-    <article v-scope="Post(post)" class="article" v-for="(post, index) in main.posts ?? []"></article>
-    <template v-if="main.layout === 'posts'">
-        <div v-scope="Page(main.page)"></div>
+    <template v-if="vm.layout === 'posts'">
+        <div v-scope="Posts()"></div>
+        <div v-scope="Page()"></div>
     </template>
 </template>
 <script>
-    function Main(main) {
+    function Main() {
         return {
             $template: '#blogure-main',
-            main,
         }
     }
 </script>
