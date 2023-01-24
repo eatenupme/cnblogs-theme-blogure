@@ -4,6 +4,19 @@
  */
 
 /**
+ * 进度条
+ * @memberof post
+ */
+function ReadProcess() {
+    const vm = window.vm
+    vm.post.process = { val: window.scrollY, max: document.documentElement.scrollHeight - window.innerHeight }
+    document.addEventListener('scroll', () => {
+        vm.post.process.max = document.documentElement.scrollHeight - window.innerHeight
+        vm.post.process.val = window.scrollY
+    })
+}
+
+/**
  * 网络触发重新渲染评论
  * @memberof post
  * @param {ajax.settings} settings
