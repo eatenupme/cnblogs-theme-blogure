@@ -53,11 +53,12 @@ function petitevueOnload(dom) {
     vm.metadata = originBody // metadata 规则：至少存在一次http被认为需要metadata.
     vm.theme = localStorage.getItem('data-theme') ?? 'light'
     vm.async = {}
-    vm.GetHeader = GetHeader
-    vm.GetHeader()
-    vm.GetMain = GetMain
-    vm.GetMain()
-    PetiteVue.createApp({ vm, Header, Main, Footer, Page }).mount()
+    vm.logined = isLogined
+    LoadHeader()
+    LoadMain()
+    // vm.GetMain = GetMain
+    // vm.GetMain()
+    PetiteVue.createApp({ vm, Header, Main, Post, Posts, Footer, Page }).mount()
 }
 
 /**
@@ -101,6 +102,7 @@ function darkSwitcher(dom) {
  * @param {String} url
  */
 function Get(url) {
+    console.log(url)
     const xhr = new XMLHttpRequest()
     xhr.open('GET', url, true)
     xhr.send()

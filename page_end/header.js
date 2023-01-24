@@ -16,7 +16,8 @@
  * @memberof headers
  * @returns {header} 博客标题导航
  */
-function GetHeader() {
+function LoadHeader() {
+    const vm = window.vm
     const header = (vm.header = {})
     const headerdom = vm.metadata.querySelector('#header')
     // title subtitle
@@ -26,14 +27,12 @@ function GetHeader() {
     const h2dom = headerdom.querySelector('h2')
     header.subtitle = h2dom.innerText.trim()
     // navlist
-    const navlist = { dom: '' }
+    header.navlist = ''
     const navlistdoms = headerdom.querySelectorAll('#navList li')
     navlistdoms.forEach(nav => { // 原则上不解析, 这里因为博客园对关闭的导航栏保留标签导致需要去解析. 这里解析仅对空值过滤.
         if (nav.innerText.trim()) {
-            navlist.dom += nav.outerHTML
+            header.navlist += nav.outerHTML
         }
     })
-    header.navlist = navlist.dom.trim()
-    console.log(header)
-    return header
+    console.debug('header loaded from vm.metadata', vm.metadata, header)
 }
