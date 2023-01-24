@@ -1,3 +1,15 @@
+<!-- 主题页面结构 -->
 <header v-scope="Header()" class="container"></header>
 <main v-scope="Main()" class="container"></main>
 <footer v-scope="Footer()" class="container"></footer>
+
+<script>
+    // stub 假桩 markdown_highlight写在博客园的脚本中, 不受主题控制但是会修改dom元素, 朴素的想法就是先替换为空函数
+    // 等挂载后再主动调用这个函数 切换函数见 reset
+    function markdown_highlight_swap() { }
+
+    function stub() {
+        [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+    }
+    stub()
+</script>

@@ -1,8 +1,8 @@
 
-function MainPage() {
+function LoadPage() {
     const vm = window.vm
-    const originBody = vm.metadata
     const page = (vm.page = {})
+    const originBody = vm.metadata
     page.pages = []
     page.async = {}
     if (!((originBody.querySelector('.Pager, .pager') || originBody.querySelector('#nav_next_page a')))) {

@@ -5,6 +5,6 @@ function LoadMain() {
         LoadPost()
     else if (vm.metadata.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) {
         LoadPosts()
-        MainPage()
+        LoadPage()
     }
 }

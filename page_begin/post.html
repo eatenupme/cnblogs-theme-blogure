@@ -22,10 +22,10 @@
         </li>
     </ul>
     <!-- 评论框 -->
-    <template v-if="!((vm.post.async.commentForm ?? true) && (vm.async.mention ?? true))">
+    <template v-if="!((vm.post.async.commentForm ?? true) && (vm.mention ?? true))">
         <div aria-busy="true"></div>
     </template>
-    <template v-if="(vm.post.async.commentForm ?? true) && (vm.async.mention ?? true) && (vm.logined ?? false)">
+    <template v-if="(vm.post.async.commentForm ?? true) && (vm.mention ?? true) && (vm.logined ?? false)">
         <div v-html="vm.post.commentForm ?? ''"
             v-effect="window.commentEditor=initCommentEditor('tbCommentBody');commentManager.renderComments(0);">
         </div>
