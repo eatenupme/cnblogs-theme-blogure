@@ -1,5 +1,101 @@
-<script onload="petitevueOnload(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/petite-vue@0.4.1.js"
+<script onload="loaded(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/petite-vue@0.4.1.js"
     defer></script>
 <script onload="tocbotOnload(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/tocbot@4.11.1.js"
     defer></script>
-<script onload="window.vm.async.mention = true" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script>
+<script onload="window.vm.mention = true" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script>
+
+<script>
+    // vm 说明
+    // window.vm 是 reactive 对象, 内部数据和视图双向绑定.
+    // vm 被设计用来承载主题全部数据 来自以下几个数据
+    // - 页面原始数据 vm.metadata
+    // - 页面结构数据 vm.header vm.{main:post/posts} vm.footer
+    // - 博客园数据 vm.logined(是否登录) vm.enableCodeLine(行号)
+    // - 设置数据 vm.theme(主题明暗)
+
+    // loaded petitevuelaoded callback 入口
+    function loaded(dom) {
+        if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
+        // 创建 vm 对象
+        const vm = (window.vm = PetiteVue.reactive({}))
+        // 页面原始数据 
+        vm.metadata = document.createElement('html')
+        vm.metadata.innerHTML = document.body.innerHTML
+        // 页面样式删除
+        document.body.classList.remove('skin-simplememory')
+        document.body.classList.remove('has-navbar')
+        document.body.classList.remove('mathjax2')
+        document.body.classList.remove('no-navbar')
+        // 原始数据替换为主题页面并设置可见
+        document.body.innerHTML = vm.metadata.querySelector('#page_begin_html').innerHTML
+        document.body.style.visibility = 'visible'
+        // token用于评论
+        const tokendom = vm.metadata.querySelector('#antiforgery_token')
+        document.body.appendChild(tokendom)
+        // 设置数据
+        vm.theme = localStorage.getItem('data-theme') ?? 'light'
+        // 博客园数据
+        vm.logined = isLogined
+        vm.enableCodeLine = enableCodeLineNumber
+        // 页面结构数据
+        LoadHeader()
+        LoadMain()
+
+        PetiteVue.createApp({ vm, Header, Main, Post, Posts, Footer, Page }).mount()
+    }
+
+    // reset markdown高亮 这里替换回来 执行v-effect需要主动调用
+    function reset() {
+        [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+    }
+    reset()
+
+    // theme 主题亮色暗色
+    // initDataTheme 初始化主题 使用localStorage
+    function initDataTheme() {
+        if (window.localStorage && localStorage.getItem('data-theme')) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) document.querySelector('#dark-switch').checked = true
+            else document.querySelector('#dark-switch').checked = false
+            darkSwitcher(document.querySelector('#dark-switch'))
+        })
+    }
+    initDataTheme()
+
+    // 更改的亮色暗色状态并存储到WindowLocalStorage
+    function darkSwitcherWithStorage(dom) {
+        if (!window.localStorage) return
+        if (dom.checked) localStorage.setItem('data-theme', 'dark')
+        if (!dom.checked) localStorage.setItem('data-theme', 'light')
+    }
+
+    // 点击触发亮色暗色切换
+    function darkSwitcher(dom) {
+        darkSwitcherWithStorage(dom)
+        if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
+        if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
+        window.vm.theme = document.querySelector('html').getAttribute('data-theme')
+    }
+
+    // highlightNumber 行号 博客园设置后生效
+    function highlightNumber(dom) {
+        if (!vm.enableCodeLine) return
+        dom.querySelectorAll('pre code').forEach(codedom => {
+            codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
+        })
+    }
+
+    // Get 原生xhr 包裹promise
+    function Get(url) {
+        console.debug(url)
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', url, true)
+        xhr.send()
+        return new Promise(r => {
+            xhr.onreadystatechange = _ => {
+                if (xhr.readyState !== 4) return
+                r(xhr)
+            }
+        })
+    }
+</script>
