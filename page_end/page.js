@@ -1,3 +1,14 @@
+// page 分页
+// page = {
+//     "pages": [
+//         { "desc": "1", "url": "" }, // 当前页
+//         { "desc": "2", "url": "https://www.cnblogs.com/blogure/?page=2" }, // 其他页
+//         { "desc": "下一页", "url": "https://www.cnblogs.com/blogure/?page=2" }
+//     ],
+//     "async": {
+//         "pages": true // 分页异步标志
+//     }
+// }
 
 function LoadPage() {
     const vm = window.vm
@@ -6,7 +17,6 @@ function LoadPage() {
     page.pages = []
     page.async = {}
     if (!((originBody.querySelector('.Pager, .pager') || originBody.querySelector('#nav_next_page a')))) {
-        console.log(page)
         return page
     }
     const pagerdom = originBody.querySelector('.Pager') ? originBody.querySelector('.Pager') : originBody.querySelector('.pager')
@@ -20,12 +30,10 @@ function LoadPage() {
             p.url = pagenode.href ? pagenode.href.trim() : ''
             page.pages.push(p)
         }
-        console.log(page)
         return page
     }
-    page.async.pagePromise = Get(originBody.querySelector('#nav_next_page a').href.trim())
     page.async.pages = false
-    page.async.pagePromise.then(((page) => {
+    Get(originBody.querySelector('#nav_next_page a').href.trim()).then(((page) => {
         return (r) => {
             const tempdom = document.createElement('html')
             tempdom.innerHTML = r.responseText
@@ -48,5 +56,4 @@ function LoadPage() {
             page.async.pages = true
         }
     })(vm.page))
-    console.log(page)
 }
