@@ -3,7 +3,8 @@
 function LoadMain() {
     if (vm.metadata.querySelector('#post_detail')) {
         LoadPost()
-        ReadProcess()
+        LoadReadProcess()
+        LoadComments()
     }
     else if (vm.metadata.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle').length !== 0) {
         LoadPosts()

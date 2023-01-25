@@ -1,9 +1,12 @@
-// header 头部
-// header.url 主页url
-// header.title header.subtitle 博客标题 博客子标题 博客园设置中修改
-// header.navlist 导航栏控件 博客园设置中修改
+// header 博客头部
+// header = {
+//     "url": "https://www.cnblogs.com/blogure/", // 博客园主页url
+//     "title": "blogure", // 博客园标题
+//     "subtitle": "又一个博客园主题", // 博客园副标题
+//     "navlist": "...管理" // 导航栏dom
+// }
 
-// LoadHeader header 数据加载
+// LoadHeader 头部数据初始化
 function LoadHeader() {
     const vm = window.vm
     const header = (vm.header = {})
@@ -22,6 +25,5 @@ function LoadHeader() {
             header.navlist += nav.outerHTML
         }
     })
-
-    console.debug(`header${header} loaded from vm.metadata`)
+    console.debug(`header${header} loaded`)
 }

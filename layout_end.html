@@ -1,20 +1,26 @@
-<script onload="loaded(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/petite-vue@0.4.1.js"
+<script onload="vmLoaded(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/petite-vue@0.4.1.js"
     defer></script>
-<script onload="tocbotOnload(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/tocbot@4.11.1.js"
+<script onload="tocbotLoaded(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/tocbot@4.11.1.js"
     defer></script>
 <script onload="window.vm.mention = true" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script>
 
 <script>
-    // vm 说明
-    // window.vm 是 reactive 对象, 内部数据和视图双向绑定.
-    // vm 被设计用来承载主题全部数据 来自以下几个数据
-    // - 页面原始数据 vm.metadata
-    // - 页面结构数据 vm.header vm.{main:post/posts} vm.footer
-    // - 博客园数据 vm.logined(是否登录) vm.enableCodeLine(行号)
-    // - 设置数据 vm.theme(主题明暗)
+    // vm 响应式容器
+    // vm = {
+    //     "metadata": htmldom, // 原始页面dom
+    //     "theme": "light", // 主题
+    //     "logined": true, // 登录标志
+    //     "enableCodeLine": false, // 代码行号标志
+    //     "header": object, // 头部数据 
+    //     "layout": "posts | post", // 文章布局
+    //     "post": object, // 文章列表
+    //     "posts": [object], // 文章列表
+    //     "page": object, // 分页数据
+    //     "mention": true // mention标志
+    // }
 
-    // loaded petitevuelaoded callback 入口
-    function loaded(dom) {
+    // vmLoaded 主题入口 https://github.com/vuejs/petite-vue
+    function vmLoaded(dom) {
         if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
         // 创建 vm 对象
         const vm = (window.vm = PetiteVue.reactive({}))
@@ -44,14 +50,24 @@
         PetiteVue.createApp({ vm, Header, Main, Post, Posts, Footer, Page }).mount()
     }
 
-    // reset markdown高亮 这里替换回来 执行v-effect需要主动调用
+    // tocbotLoaded https://tscanlin.github.io/tocbot/
+    function tocbotLoaded(dom) {
+        if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
+        tocbot.init({
+            tocSelector: '#toc',
+            contentSelector: '.article',
+            headingSelector: 'h1, h2, h3',
+            hasInnerContainers: true,
+        })
+    }
+
+    // reset 替换假桩 执行v-effect需要主动调用
     function reset() {
         [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
     }
     reset()
 
-    // theme 主题亮色暗色
-    // initDataTheme 初始化主题 使用localStorage
+    // initDataTheme 主题初始化
     function initDataTheme() {
         if (window.localStorage && localStorage.getItem('data-theme')) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
@@ -62,14 +78,14 @@
     }
     initDataTheme()
 
-    // 更改的亮色暗色状态并存储到WindowLocalStorage
+    // darkSwitcherWithStorage 亮色暗色状态存储到WindowLocalStorage
     function darkSwitcherWithStorage(dom) {
         if (!window.localStorage) return
         if (dom.checked) localStorage.setItem('data-theme', 'dark')
         if (!dom.checked) localStorage.setItem('data-theme', 'light')
     }
 
-    // 点击触发亮色暗色切换
+    // darkSwitcher 更改的亮色暗色状态
     function darkSwitcher(dom) {
         darkSwitcherWithStorage(dom)
         if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
@@ -77,7 +93,7 @@
         window.vm.theme = document.querySelector('html').getAttribute('data-theme')
     }
 
-    // highlightNumber 行号 博客园设置后生效
+    // highlightNumber 行号渲染
     function highlightNumber(dom) {
         if (!vm.enableCodeLine) return
         dom.querySelectorAll('pre code').forEach(codedom => {
@@ -85,7 +101,7 @@
         })
     }
 
-    // Get 原生xhr 包裹promise
+    // Get 包裹promise的原生xhr
     function Get(url) {
         console.debug(url)
         const xhr = new XMLHttpRequest()

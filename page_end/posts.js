@@ -1,19 +1,17 @@
-/**
- * 随笔[文章]列表
- * @namespace posts
- */
+// posts 文章数组
 
+// LoadPosts 文章列表初始化
 function LoadPosts() {
-    // def
+    // 设置页面布局与初始化文章数组
     const vm = window.vm
     vm.layout = 'posts'
     vm.posts = []
-    // dom proc
+    // 获取页面全部文章链接
     const postlistdoms = vm.metadata.querySelectorAll('.postTitle, .postTitl2, .entrylistPosttitle')
     const descsdoms = vm.metadata.querySelectorAll('.postDesc, .postDesc2, .entrylistItemPostDesc')
     const l = Math.min(postlistdoms.length, descsdoms.length)
     for (let index = 0; index < l; index++) {
-        // def
+        // 初始化文章进行预加载
         const post = { async: {} }
         const adom = postlistdoms[index].querySelector('a')
         post.title = adom.innerText.trim()
@@ -24,7 +22,6 @@ function LoadPosts() {
             return (r) => {
                 const tempdom = document.createElement('div')
                 tempdom.innerHTML = r.responseText.trim()
-                console.log('1', vm.posts[idx])
                 FillPost(vm.posts[idx], tempdom)
                 vm.posts[idx].async.preview = true
             }
