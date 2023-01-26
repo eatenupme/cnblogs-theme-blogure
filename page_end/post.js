@@ -157,8 +157,10 @@ function FillPost(post, dom) {
     const detaildom = dom.querySelector('#post_detail')
     // title url
     const titledom = detaildom.querySelector('.postTitle a')
-    post.url = titledom.href.trim()
-    post.title = titledom.innerText.trim()
+    if (!post.url)
+        post.url = titledom.href.trim()
+    if (!post.title)
+        post.title = titledom.innerText.trim()
     // content
     const bodydom = detaildom.querySelector('#cnblogs_post_body')
     highlightNumber(bodydom)
