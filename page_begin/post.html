@@ -15,7 +15,7 @@
         👁️ {{vm.post.desc.viewCount}}
         💬 {{vm.post.desc.commentCount}}
     </div>
-    <div v-html="vm.post.content" v-effect="markdown_highlight('.article');"></div>
+    <div v-html="vm.post.content" v-effect="markdown_highlight('.article');mermaidRender.render();"></div>
     <!-- 标签 -->
     <ul :aria-busy="!(vm.post.async.tags ?? true)" style="display:flex;padding-left:0;margin-bottom:0;">
         <li v-for="(tag, index) in vm.post.tags ?? []"
