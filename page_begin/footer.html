@@ -10,11 +10,11 @@
     <template v-if="vm.layout === 'post'">
         <label for="switch">
             <input type="checkbox"
-                style="position:fixed;bottom:var(--spacing);right:var(--spacing);z-index:2;transform:rotate(180deg);"
+                style="position:fixed;bottom:var(--spacing);right:var(--spacing);z-index:3;transform:rotate(180deg);"
                 id="toc-switch" role="switch" @click="tocSwitcher($el)">
         </label>
         <aside id="toc"
-            style="transition:var(--transition);transform:translate(calc(var(--spacing)*15));width:calc(var(--spacing)*15);height:100%;position:fixed;top:0;right:0;z-index:1;background-color:var(--code-kbd-color);">
+            style="transition:var(--transition);transform:translate(calc(var(--spacing)*15));width:calc(var(--spacing)*15);height:100%;position:fixed;top:0;right:0;z-index:2;background-color:var(--code-kbd-color);">
         </aside>
     </template>
 </template>
