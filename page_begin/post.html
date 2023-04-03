@@ -1,0 +1,64 @@
+<!-- post -->
+<template id="blogure-post">
+    <!-- 阅读进度 -->
+    <progress :value="vm.post.process.val" :max="vm.post.process.max"
+        style="position: fixed;top: 0;left: 0;border-radius: 0;z-index: 1;"></progress>
+    <!-- 标题 -->
+    <h2
+        style="position:relative;top:calc(var(--block-spacing-horizontal)*-3);height:var(--block-spacing-horizontal);margin-bottom:0;text-align:center;">
+        <kbd style="box-shadow:var(--card-box-shadow);">
+            <a :href="vm.post.url" style="text-align:center;color:var(--code-kbd-color);">{{ vm.post.title }}</a>
+        </kbd>
+    </h2>
+    <!-- 发布时间 观看人数 评论数 -->
+    <div style="opacity:50%;text-align:center;">
+        📅 {{vm.post.desc.date}}
+        👁️ {{vm.post.desc.viewCount}}
+        💬 {{vm.post.desc.commentCount}}
+    </div>
+    <div v-html="vm.post.content" v-effect="markdown_highlight('.article');mermaidRender.render();"></div>
+    <!-- 标签 -->
+    <ul :aria-busy="!(vm.post.async.tags ?? true)" style="display:flex;padding-left:0;margin-bottom:0;">
+        <li v-for="(tag, index) in vm.post.tags ?? []"
+            style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
+            <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
+        </li>
+    </ul>
+    <!-- 评论框 -->
+    <template v-if="!((vm.post.async.commentForm ?? true) && (vm.mention ?? true))">
+        <div aria-busy="true"></div>
+    </template>
+    <template v-if="(vm.post.async.commentForm ?? true) && (vm.mention ?? true) && (vm.logined ?? false)">
+        <div v-html="vm.post.commentForm ?? ''"
+            v-effect="window.commentEditor=initCommentEditor('tbCommentBody');commentManager.renderComments(0);">
+        </div>
+    </template>
+    <!-- 评论 -->
+    <template v-if="(vm.logined ?? false)">
+        <ul :aria-busy="!(vm.post.async.comments ?? true)" style="padding:0;">
+            <li v-for="(comment, index) in vm.post.comments ?? []" style="list-style:none;display:flex;width:100%;">
+                <div>
+                    <img :src="comment.user.avatar" :alt="comment.user.avatar"
+                        style="border-radius:50%;margin-right:var(--spacing);">
+                </div>
+                <div style="flex-grow:1;">
+                    <div v-html="comment.user.info ?? ''"></div>
+                    <div v-html="comment.content ?? ''"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;white-space:nowrap;" v-html="comment.actions ?? ''">
+                </div>
+            </li>
+        </ul>
+    </template>
+    <template v-if="!(vm.logined ?? false)">
+        <div>登录后才能查看或发表评论, 立即 <a rel="nofollow" href="javascript:void(0);" class="underline"
+                onclick="return account.login('!comments');">登录</a></div>
+    </template>
+</template>
+<script>
+    function Post() {
+        return {
+            $template: '#blogure-post',
+        }
+    }
+</script>

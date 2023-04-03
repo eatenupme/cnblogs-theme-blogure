@@ -1,0 +1,41 @@
+<!-- post -->
+<template id="blogure-posts">
+    <article class="article" v-for="(post, index) in vm.posts ?? []">
+        <!-- 标题 -->
+        <h2
+            style="position:relative;top:calc(var(--block-spacing-horizontal)*-3);height:var(--block-spacing-horizontal);margin-bottom:0;text-align:center;">
+            <kbd style="box-shadow:var(--card-box-shadow);">
+                <a :href="post.url" style="text-align:center;color:var(--code-kbd-color);">{{ post.title }}</a>
+            </kbd>
+        </h2>
+        <!-- 发布时间 观看人数 评论数 -->
+        <template v-if="!post.async.preview">
+            <div aria-busy="true"></div>
+        </template>
+        <template v-if="post.async.preview">
+            <div style="opacity:50%;text-align:center;">
+                📅 {{ post.desc.date }}
+                👁️ {{ post.desc.viewCount }}
+                💬 {{ post.desc.commentCount }}
+            </div>
+            <div v-html="post.preview" v-effect="markdown_highlight('.article');;mermaidRender.render();"></div>
+        </template>
+        <!-- 更多按钮 -->
+        <a :href="post.url"
+            style="display:inline-block;margin-bottom:var(--spacing);text-decoration:underline;color:var(--code-kbd-background-color);">阅读更多</a>
+        <!-- 标签 -->
+        <ul :aria-busy="!post.async.tags" style="display:flex;padding-left:0;margin-bottom:0;">
+            <li v-for="(tag, index) in post.tags ?? []"
+                style="margin-right:var(--nav-element-spacing-horizontal);list-style:none;">
+                <kbd><a :href="tag.url" style="color:var(--code-kbd-color);">{{ tag.desc }}</a></kbd>
+            </li>
+        </ul>
+    </article>
+</template>
+<script>
+    function Posts() {
+        return {
+            $template: '#blogure-posts',
+        }
+    }
+</script>

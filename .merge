@@ -1,0 +1,13 @@
+#!/bin/bash
+
+mkdir .tmp
+echo '<!-- DO NOT EDIT -->' > .tmp/DONOTEDIT
+echo '<script>' > .tmp/SCRIPT
+echo '</script>' > .tmp/SCRIPTEND
+wget https://unpkg.com/@picocss/pico@1.5.5/css/pico.min.css -O .tmp/pico.min.css
+
+mkdir dist
+cat .tmp/DONOTEDIT layout_begin.html page_begin/*.html > dist/page_begin.html
+cat .tmp/DONOTEDIT layout_end.html .tmp/SCRIPT page_end/*.js .tmp/SCRIPTEND > dist/page_end.html
+cat .tmp/pico.min.css layout.css >  dist/custom.css
+rm -rf .tmp

@@ -1,0 +1,17 @@
+<!-- main -->
+<template id="blogure-main">
+    <template v-if="vm.layout === 'post'">
+        <article class="article" v-scope="Post()"></article>
+    </template>
+    <template v-if="vm.layout === 'posts'">
+        <div v-scope="Posts()"></div>
+        <div v-scope="Page()"></div>
+    </template>
+</template>
+<script>
+    function Main() {
+        return {
+            $template: '#blogure-main',
+        }
+    }
+</script>
