@@ -1,0 +1,72 @@
+/* custom */
+kbd {
+    --font-family: "sans-serif";
+}
+
+body {
+    visibility: hidden;
+}
+
+blockquote {
+    border-top: 0;
+    border-bottom: 0;
+}
+
+blockquote p {
+    margin-bottom: 0;
+}
+
+pre>.highlighter-prismjs,
+pre>code {
+    padding: 0;
+}
+
+::-webkit-scrollbar {
+    width: calc(var(--spacing)/2);
+    height: calc(var(--spacing)/2);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--code-kbd-background-color);
+}
+
+.is-active-li {
+    background: var(--code-kbd-background-color);
+}
+
+.toc-list {
+    padding: 0;
+}
+
+.toc-list-item a {
+    color: var(--code-kbd-background-color);
+}
+
+.is-active-li a {
+    color: var(--code-kbd-color);
+}
+
+p code {
+    padding: calc(var(--spacing) / 4);
+}
+
+.light:before {
+    content: "🌝";
+}
+
+.dark:before {
+    content: "🌚";
+}
+
+#navList li a {
+    display: block !important;
+}
+
+.is-collapsible {
+    overflow: hidden;
+    transition: var(--transition)
+}
+
+.is-collapsed {
+    max-height: 0
+}

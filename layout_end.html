@@ -1,0 +1,117 @@
+<script onload="vmLoaded(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/petite-vue@0.4.1.js"
+    defer></script>
+<script onload="tocbotLoaded(this)" src="https://blog-static.cnblogs.com/files/blogs/707675/tocbot@4.11.1.js"
+    defer></script>
+<script onload="window.vm.mention = true" src="https://mention.cnblogs.com/bundles/mention.min.js" defer></script>
+
+<script>
+    // vm 响应式容器
+    // vm = {
+    //     "metadata": htmldom, // 原始页面dom
+    //     "theme": "light", // 主题
+    //     "logined": true, // 登录标志
+    //     "enableCodeLine": false, // 代码行号标志
+    //     "header": object, // 头部数据 
+    //     "layout": "posts | post", // 文章布局
+    //     "post": object, // 文章列表
+    //     "posts": [object], // 文章列表
+    //     "page": object, // 分页数据
+    //     "mention": true // mention标志
+    // }
+
+    // vmLoaded 主题入口 https://github.com/vuejs/petite-vue
+    function vmLoaded(dom) {
+        if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
+        // 创建 vm 对象
+        const vm = (window.vm = PetiteVue.reactive({}))
+        // 页面原始数据 
+        vm.metadata = document.createElement('html')
+        vm.metadata.innerHTML = document.body.innerHTML
+        // 页面样式删除
+        document.body.classList.remove('skin-simplememory')
+        document.body.classList.remove('has-navbar')
+        document.body.classList.remove('mathjax2')
+        document.body.classList.remove('no-navbar')
+        // 原始数据替换为主题页面并设置可见
+        document.body.innerHTML = vm.metadata.querySelector('#page_begin_html').innerHTML
+        document.body.style.visibility = 'visible'
+        // token用于评论
+        const tokendom = vm.metadata.querySelector('#antiforgery_token')
+        document.body.appendChild(tokendom)
+        // 设置数据
+        vm.theme = localStorage.getItem('data-theme') ?? 'light'
+        // 博客园数据
+        vm.logined = isLogined
+        vm.enableCodeLine = enableCodeLineNumber
+        // 页面结构数据
+        LoadHeader()
+        LoadMain()
+
+        PetiteVue.createApp({ vm, Header, Main, Post, Posts, Footer, Page }).mount()
+    }
+
+    // tocbotLoaded https://tscanlin.github.io/tocbot/
+    function tocbotLoaded(dom) {
+        if (!(!dom.readyState || dom.readyState === 'loaded' || dom.readyState === 'complete')) return
+        tocbot.init({
+            tocSelector: '#toc',
+            contentSelector: '.article',
+            headingSelector: 'h1, h2, h3',
+            hasInnerContainers: true,
+        })
+    }
+
+    // reset 替换假桩 执行v-effect需要主动调用
+    function reset() {
+        [markdown_highlight, markdown_highlight_swap] = [markdown_highlight_swap, markdown_highlight]
+    }
+    reset()
+
+    // initDataTheme 主题初始化
+    function initDataTheme() {
+        if (window.localStorage && localStorage.getItem('data-theme')) document.querySelector('html').setAttribute('data-theme', localStorage.getItem('data-theme'))
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) document.querySelector('#dark-switch').checked = true
+            else document.querySelector('#dark-switch').checked = false
+            darkSwitcher(document.querySelector('#dark-switch'))
+        })
+    }
+    initDataTheme()
+
+    // darkSwitcherWithStorage 亮色暗色状态存储到WindowLocalStorage
+    function darkSwitcherWithStorage(dom) {
+        if (!window.localStorage) return
+        if (dom.checked) localStorage.setItem('data-theme', 'dark')
+        if (!dom.checked) localStorage.setItem('data-theme', 'light')
+    }
+
+    // darkSwitcher 更改的亮色暗色状态
+    function darkSwitcher(dom) {
+        darkSwitcherWithStorage(dom)
+        if (dom.checked) document.querySelector('html').setAttribute('data-theme', 'dark')
+        if (!dom.checked) document.querySelector('html').setAttribute('data-theme', 'light')
+        window.vm.theme = document.querySelector('html').getAttribute('data-theme')
+    }
+
+    // highlightNumber 行号渲染
+    function highlightNumber(dom) {
+        if (!vm.enableCodeLine) return
+        dom.querySelectorAll('pre code').forEach(codedom => {
+            codedom.parentElement.classList.add('line-numbers', 'keep-initial-line-feed')
+        })
+    }
+
+    // Get 包裹promise的原生xhr
+    function Get(url) {
+        console.debug(url)
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', url, true)
+        xhr.send()
+        return new Promise(r => {
+            xhr.onreadystatechange = _ => {
+                if (xhr.readyState !== 4) return
+                r(xhr)
+            }
+        })
+    }
+</script>

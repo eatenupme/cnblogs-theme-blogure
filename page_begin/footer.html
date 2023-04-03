@@ -1,0 +1,27 @@
+<!-- footer -->
+<template id="blogure-footer">
+    <small>Built with <a href="https://www.cnblogs.com/">cnblogs</a> •
+        <a href="https://github.com/xnuc/cnblogs-theme-blogure">source</a></small>
+    <label for="switch">
+        <input type="checkbox" style="position:fixed;bottom:var(--spacing);left:var(--spacing);" id="dark-switch"
+            :class="vm.theme" role="switch" @click="darkSwitcher($el)"
+            :checked="localStorage.getItem('data-theme') === 'dark' ?? false">
+    </label>
+    <template v-if="vm.layout === 'post'">
+        <label for="switch">
+            <input type="checkbox"
+                style="position:fixed;bottom:var(--spacing);right:var(--spacing);z-index:3;transform:rotate(180deg);"
+                id="toc-switch" role="switch" @click="tocSwitcher($el)">
+        </label>
+        <aside id="toc"
+            style="transition:var(--transition);transform:translate(calc(var(--spacing)*15));width:calc(var(--spacing)*15);height:100%;position:fixed;top:0;right:0;z-index:2;background-color:var(--code-kbd-color);">
+        </aside>
+    </template>
+</template>
+<script>
+    function Footer() {
+        return {
+            $template: '#blogure-footer',
+        }
+    }
+</script>

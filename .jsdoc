@@ -1,0 +1,3 @@
+#!/bin/bash
+
+jsdoc2md page_end/*.js  page_begin/*.js  > API.md 
